@@ -1,150 +1,149 @@
 package main
 
-type Lexeme uint64
+type lexeme uint64
 
 const (
-	InvalidLexeme Lexeme = iota
-	StartAdditionSectionLexeme
-	EndAdditionSectionLexeme
-	StartSubtractionSectionLexeme
-	EndSubtractionSectionLexeme
-	StartJumpSectionLexeme
-	EndJumpSectionLexeme
-	StartCommentSectionLexeme
-	EndCommentSectionLexeme
-	IncrementOneLexeme
-	IncrementEightLexeme
-	DecrementOneLexeme
-	DecrementEightLexeme
-	MultiplyTwoLexeme
-	MultiplyEightLexeme
-	DivideTwoLexeme
-	DivideEightLexeme
-	SquareLexeme
-	CubeLexeme
-	MinimumLexeme
-	MiddleLexeme
-	MaximumLexeme
-	PrintCharacterLexeme
-	PrintNumberLexeme
-	SaveLexeme
-	LoadLexeme
-	SeparatorLexeme
+	invalidLexeme lexeme = iota
+	startAdditionSectionLexeme
+	endAdditionSectionLexeme
+	startSubtractionSectionLexeme
+	endSubtractionSectionLexeme
+	startJumpSectionLexeme
+	endJumpSectionLexeme
+	startCommentSectionLexeme
+	endCommentSectionLexeme
+	incrementOneLexeme
+	incrementEightLexeme
+	decrementOneLexeme
+	decrementEightLexeme
+	multiplyTwoLexeme
+	multiplyEightLexeme
+	divideTwoLexeme
+	divideEightLexeme
+	squareLexeme
+	cubeLexeme
+	minimumLexeme
+	middleLexeme
+	maximumLexeme
+	printCharacterLexeme
+	printNumberLexeme
+	saveLexeme
+	loadLexeme
+	separatorLexeme
 )
 
-func produceLexemes(input []byte) (output []Lexeme, err error) {
-	output = make([]Lexeme, 0, len(input))
-
-	var sectionStack []Lexeme
+func produceLexemes(input []byte) (output []lexeme, err error) {
+	output = make([]lexeme, 0, len(input))
+	sectionStack := make([]lexeme, 0, len(input)/2)
 
 	for _, r := range input {
-		l := InvalidLexeme
+		l := invalidLexeme
 
-		if len(sectionStack) > 0 && sectionStack[len(sectionStack)-1] == StartCommentSectionLexeme {
+		if len(sectionStack) > 0 && sectionStack[len(sectionStack)-1] == startCommentSectionLexeme {
 			switch r {
 			case '{':
-				l = StartCommentSectionLexeme
+				l = startCommentSectionLexeme
 				sectionStack = append(sectionStack, l)
 			case '}':
-				l = EndCommentSectionLexeme
+				l = endCommentSectionLexeme
 				sectionStack = sectionStack[:len(sectionStack)-1]
 			}
 		} else {
 			switch r {
 			case '+':
-				if len(output) > 0 && output[len(output)-1] == IncrementOneLexeme {
-					output[len(output)-1] = IncrementEightLexeme
+				if len(output) > 0 && output[len(output)-1] == incrementOneLexeme {
+					output[len(output)-1] = incrementEightLexeme
 				} else {
-					l = IncrementOneLexeme
+					l = incrementOneLexeme
 				}
 			case '-':
-				if len(output) > 0 && output[len(output)-1] == DecrementOneLexeme {
-					output[len(output)-1] = DecrementEightLexeme
+				if len(output) > 0 && output[len(output)-1] == decrementOneLexeme {
+					output[len(output)-1] = decrementEightLexeme
 				} else {
-					l = DecrementOneLexeme
+					l = decrementOneLexeme
 				}
 			case '*':
-				if len(output) > 0 && output[len(output)-1] == MultiplyTwoLexeme {
-					output[len(output)-1] = MultiplyEightLexeme
+				if len(output) > 0 && output[len(output)-1] == multiplyTwoLexeme {
+					output[len(output)-1] = multiplyEightLexeme
 				} else {
-					l = MultiplyTwoLexeme
+					l = multiplyTwoLexeme
 				}
 			case '/':
-				if len(output) > 0 && output[len(output)-1] == DivideTwoLexeme {
-					output[len(output)-1] = DivideEightLexeme
+				if len(output) > 0 && output[len(output)-1] == divideTwoLexeme {
+					output[len(output)-1] = divideEightLexeme
 				} else {
-					l = DivideTwoLexeme
+					l = divideTwoLexeme
 				}
 			case '^':
-				if len(output) > 0 && output[len(output)-1] == SquareLexeme {
-					output[len(output)-1] = CubeLexeme
+				if len(output) > 0 && output[len(output)-1] == squareLexeme {
+					output[len(output)-1] = cubeLexeme
 				} else {
-					l = SquareLexeme
+					l = squareLexeme
 				}
 			case '!':
-				if len(output) > 0 && output[len(output)-1] == PrintCharacterLexeme {
-					output[len(output)-1] = PrintNumberLexeme
+				if len(output) > 0 && output[len(output)-1] == printCharacterLexeme {
+					output[len(output)-1] = printNumberLexeme
 				} else {
-					l = PrintCharacterLexeme
+					l = printCharacterLexeme
 				}
 			case '\'':
-				l = MinimumLexeme
+				l = minimumLexeme
 			case '~':
-				l = MiddleLexeme
+				l = middleLexeme
 			case '"':
-				l = MaximumLexeme
+				l = maximumLexeme
 			case ':':
-				l = SaveLexeme
+				l = saveLexeme
 			case ';':
-				l = LoadLexeme
+				l = loadLexeme
 			case '(':
-				l = StartAdditionSectionLexeme
+				l = startAdditionSectionLexeme
 				sectionStack = append(sectionStack, l)
 			case ')':
-				l = EndAdditionSectionLexeme
+				l = endAdditionSectionLexeme
 				if len(sectionStack) == 0 {
 					err = ErrNoMatchSectionCharacters
 					return
 				}
-				if sectionStack[len(sectionStack)-1] != StartAdditionSectionLexeme {
+				if sectionStack[len(sectionStack)-1] != startAdditionSectionLexeme {
 					err = ErrOverlapSectionCharacters
 					return
 				}
 				sectionStack = sectionStack[:len(sectionStack)-1]
 			case '[':
-				l = StartSubtractionSectionLexeme
+				l = startSubtractionSectionLexeme
 				sectionStack = append(sectionStack, l)
 			case ']':
-				l = EndSubtractionSectionLexeme
+				l = endSubtractionSectionLexeme
 				if len(sectionStack) == 0 {
 					err = ErrNoMatchSectionCharacters
 					return
 				}
-				if sectionStack[len(sectionStack)-1] != StartSubtractionSectionLexeme {
+				if sectionStack[len(sectionStack)-1] != startSubtractionSectionLexeme {
 					err = ErrOverlapSectionCharacters
 					return
 				}
 				sectionStack = sectionStack[:len(sectionStack)-1]
 			case '<':
-				l = StartJumpSectionLexeme
+				l = startJumpSectionLexeme
 				sectionStack = append(sectionStack, l)
 			case '>':
-				l = EndJumpSectionLexeme
+				l = endJumpSectionLexeme
 				if len(sectionStack) == 0 {
 					err = ErrNoMatchSectionCharacters
 					return
 				}
-				if sectionStack[len(sectionStack)-1] != StartJumpSectionLexeme {
+				if sectionStack[len(sectionStack)-1] != startJumpSectionLexeme {
 					err = ErrOverlapSectionCharacters
 					return
 				}
 				sectionStack = sectionStack[:len(sectionStack)-1]
 			case '{':
-				l = StartCommentSectionLexeme
+				l = startCommentSectionLexeme
 				sectionStack = append(sectionStack, l)
 			case ' ', '\n', '\r', '\t', '\v', '\f', 0x85, 0xa0:
-				if len(output) == 0 || output[len(output)-1] != SeparatorLexeme {
-					l = SeparatorLexeme
+				if len(output) == 0 || output[len(output)-1] != separatorLexeme {
+					l = separatorLexeme
 				}
 			default:
 				err = ErrLexemeUnrecognized
@@ -152,7 +151,7 @@ func produceLexemes(input []byte) (output []Lexeme, err error) {
 			}
 		}
 
-		if l != InvalidLexeme {
+		if l != invalidLexeme {
 			output = append(output, l)
 		}
 	}

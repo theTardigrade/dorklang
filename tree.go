@@ -4,67 +4,67 @@ import (
 	"fmt"
 )
 
-type Tree struct {
-	RootNode   *ParentTreeNode
+type tree struct {
+	rootNode   *parentTreeNode
 	savedValue uint8
 }
 
-type TreeNode interface {
-	Value(uint8) (uint8, error)
+type treeNode interface {
+	value(uint8) (uint8, error)
 }
 
-type ParentTreeNode struct {
-	Lexeme     Lexeme
-	Tree       *Tree
-	ChildNodes []TreeNode
+type parentTreeNode struct {
+	lexeme     lexeme
+	tree       *tree
+	childNodes []treeNode
 }
 
-type TerminalTreeNode struct {
-	Lexeme     Lexeme
-	Tree       *Tree
-	ParentNode *ParentTreeNode
+type terminalTreeNode struct {
+	lexeme     lexeme
+	tree       *tree
+	parentNode *parentTreeNode
 }
 
-func (tree *Tree) Run() (err error) {
-	_, err = tree.RootNode.Value(0)
+func (tree *tree) Run() (err error) {
+	_, err = tree.rootNode.value(0)
 
 	return
 }
 
-func (node *ParentTreeNode) Value(input uint8) (output uint8, err error) {
+func (node *parentTreeNode) value(input uint8) (output uint8, err error) {
 	output = input
 
-	switch node.Lexeme {
-	case StartJumpSectionLexeme:
+	switch node.lexeme {
+	case startJumpSectionLexeme:
 		{
 			for output > 0 {
-				for _, node := range node.ChildNodes {
-					output, err = node.Value(output)
+				for _, node := range node.childNodes {
+					output, err = node.value(output)
 					if err != nil {
 						return
 					}
 				}
 			}
 		}
-	case StartAdditionSectionLexeme,
-		StartSubtractionSectionLexeme:
+	case startAdditionSectionLexeme,
+		startSubtractionSectionLexeme:
 		{
 			var localOutput uint8
 
-			for _, node := range node.ChildNodes {
-				localOutput, err = node.Value(localOutput)
+			for _, node := range node.childNodes {
+				localOutput, err = node.value(localOutput)
 				if err != nil {
 					return
 				}
 			}
 
-			if node.Lexeme == StartAdditionSectionLexeme {
+			if node.lexeme == startAdditionSectionLexeme {
 				output += localOutput
 			} else {
 				output -= localOutput
 			}
 		}
-	case StartCommentSectionLexeme:
+	case startCommentSectionLexeme:
 	default:
 		err = ErrLexemeUnrecognized
 	}
@@ -72,54 +72,54 @@ func (node *ParentTreeNode) Value(input uint8) (output uint8, err error) {
 	return
 }
 
-func (node *TerminalTreeNode) Value(input uint8) (output uint8, err error) {
+func (node *terminalTreeNode) value(input uint8) (output uint8, err error) {
 	output = input
 
-	switch node.Lexeme {
-	case IncrementOneLexeme:
+	switch node.lexeme {
+	case incrementOneLexeme:
 		output++
-	case IncrementEightLexeme:
+	case incrementEightLexeme:
 		output += 8
-	case DecrementOneLexeme:
+	case decrementOneLexeme:
 		output--
-	case DecrementEightLexeme:
+	case decrementEightLexeme:
 		output -= 8
-	case MultiplyTwoLexeme:
+	case multiplyTwoLexeme:
 		output *= 2
-	case MultiplyEightLexeme:
+	case multiplyEightLexeme:
 		output *= 8
-	case DivideTwoLexeme:
+	case divideTwoLexeme:
 		output /= 2
-	case DivideEightLexeme:
+	case divideEightLexeme:
 		output /= 8
-	case SquareLexeme:
+	case squareLexeme:
 		output *= output
-	case CubeLexeme:
+	case cubeLexeme:
 		output *= output * output
-	case PrintCharacterLexeme:
+	case printCharacterLexeme:
 		fmt.Printf("%c", input)
-	case PrintNumberLexeme:
+	case printNumberLexeme:
 		fmt.Printf("%d", input)
-	case MinimumLexeme:
+	case minimumLexeme:
 		output = 0
-	case MiddleLexeme:
+	case middleLexeme:
 		output = 128
-	case MaximumLexeme:
+	case maximumLexeme:
 		output = 255
-	case SaveLexeme:
-		if node.Tree == nil {
+	case saveLexeme:
+		if node.tree == nil {
 			err = ErrTreeUnfound
 			return
 		}
 
-		node.Tree.savedValue = output
-	case LoadLexeme:
-		if node.Tree == nil {
+		node.tree.savedValue = output
+	case loadLexeme:
+		if node.tree == nil {
 			err = ErrTreeUnfound
 			return
 		}
 
-		output = node.Tree.savedValue
+		output = node.tree.savedValue
 	default:
 		err = ErrLexemeUnrecognized
 	}
@@ -127,28 +127,28 @@ func (node *TerminalTreeNode) Value(input uint8) (output uint8, err error) {
 	return
 }
 
-func produceTree(input []Lexeme) (output *Tree, err error) {
-	rootNode := &ParentTreeNode{
-		Lexeme: StartAdditionSectionLexeme,
+func produceTree(input []lexeme) (output *tree, err error) {
+	rootNode := &parentTreeNode{
+		lexeme: startAdditionSectionLexeme,
 	}
-	parentNodeStack := []*ParentTreeNode{
+	parentNodeStack := []*parentTreeNode{
 		rootNode,
 	}
 
-	output = new(Tree)
-	output.RootNode = rootNode
-	rootNode.Tree = output
+	output = new(tree)
+	output.rootNode = rootNode
+	rootNode.tree = output
 
 	for _, l := range input {
 		switch l {
-		case StartAdditionSectionLexeme,
-			StartSubtractionSectionLexeme,
-			StartJumpSectionLexeme,
-			StartCommentSectionLexeme:
+		case startAdditionSectionLexeme,
+			startSubtractionSectionLexeme,
+			startJumpSectionLexeme,
+			startCommentSectionLexeme:
 			{
-				nextNode := &ParentTreeNode{
-					Lexeme: l,
-					Tree:   output,
+				nextNode := &parentTreeNode{
+					lexeme: l,
+					tree:   output,
 				}
 
 				if len(parentNodeStack) == 0 {
@@ -157,14 +157,14 @@ func produceTree(input []Lexeme) (output *Tree, err error) {
 				}
 
 				nextParentNode := parentNodeStack[len(parentNodeStack)-1]
-				nextParentNode.ChildNodes = append(nextParentNode.ChildNodes, nextNode)
+				nextParentNode.childNodes = append(nextParentNode.childNodes, nextNode)
 
 				parentNodeStack = append(parentNodeStack, nextNode)
 			}
-		case EndAdditionSectionLexeme,
-			EndSubtractionSectionLexeme,
-			EndJumpSectionLexeme,
-			EndCommentSectionLexeme:
+		case endAdditionSectionLexeme,
+			endSubtractionSectionLexeme,
+			endJumpSectionLexeme,
+			endCommentSectionLexeme:
 			{
 				if len(parentNodeStack) == 0 {
 					err = ErrTreeParentNodeUnfound
@@ -173,27 +173,27 @@ func produceTree(input []Lexeme) (output *Tree, err error) {
 
 				parentNodeStack = parentNodeStack[:len(parentNodeStack)-1]
 			}
-		case IncrementOneLexeme,
-			IncrementEightLexeme,
-			DecrementOneLexeme,
-			DecrementEightLexeme,
-			MultiplyTwoLexeme,
-			MultiplyEightLexeme,
-			DivideTwoLexeme,
-			DivideEightLexeme,
-			SquareLexeme,
-			CubeLexeme,
-			MinimumLexeme,
-			MiddleLexeme,
-			MaximumLexeme,
-			PrintCharacterLexeme,
-			PrintNumberLexeme,
-			SaveLexeme,
-			LoadLexeme:
+		case incrementOneLexeme,
+			incrementEightLexeme,
+			decrementOneLexeme,
+			decrementEightLexeme,
+			multiplyTwoLexeme,
+			multiplyEightLexeme,
+			divideTwoLexeme,
+			divideEightLexeme,
+			squareLexeme,
+			cubeLexeme,
+			minimumLexeme,
+			middleLexeme,
+			maximumLexeme,
+			printCharacterLexeme,
+			printNumberLexeme,
+			saveLexeme,
+			loadLexeme:
 			{
-				nextNode := &TerminalTreeNode{
-					Lexeme: l,
-					Tree:   output,
+				nextNode := &terminalTreeNode{
+					lexeme: l,
+					tree:   output,
 				}
 
 				if len(parentNodeStack) == 0 {
@@ -202,10 +202,10 @@ func produceTree(input []Lexeme) (output *Tree, err error) {
 				}
 
 				nextParentNode := parentNodeStack[len(parentNodeStack)-1]
-				nextParentNode.ChildNodes = append(nextParentNode.ChildNodes, nextNode)
-				nextNode.ParentNode = nextParentNode
+				nextParentNode.childNodes = append(nextParentNode.childNodes, nextNode)
+				nextNode.parentNode = nextParentNode
 			}
-		case SeparatorLexeme:
+		case separatorLexeme:
 		default:
 			err = ErrLexemeUnrecognized
 			return

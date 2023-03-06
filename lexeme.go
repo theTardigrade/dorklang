@@ -27,6 +27,8 @@ const (
 	maximumLexeme
 	printCharacterLexeme
 	printNumberLexeme
+	inputCharacterLexeme
+	inputNumberLexeme
 	saveLexeme
 	loadLexeme
 	separatorLexeme
@@ -85,6 +87,12 @@ func produceLexemes(input []byte) (output []lexeme, err error) {
 					output[len(output)-1] = printNumberLexeme
 				} else {
 					l = printCharacterLexeme
+				}
+			case '?':
+				if len(output) > 0 && output[len(output)-1] == inputCharacterLexeme {
+					output[len(output)-1] = inputNumberLexeme
+				} else {
+					l = inputCharacterLexeme
 				}
 			case '\'':
 				l = minimumLexeme

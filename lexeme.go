@@ -12,14 +12,18 @@ const (
 	endJumpSectionLexeme
 	startCommentSectionLexeme
 	endCommentSectionLexeme
-	incrementOneLexeme
-	incrementEightLexeme
-	decrementOneLexeme
-	decrementEightLexeme
+	addOneLexeme
+	addEightLexeme
+	stackAddLexeme
+	subtractOneLexeme
+	subtractEightLexeme
+	stackSubtractLexeme
 	multiplyTwoLexeme
 	multiplyEightLexeme
+	stackMultiplyLexeme
 	divideTwoLexeme
 	divideEightLexeme
+	stackDivideLexeme
 	squareLexeme
 	cubeLexeme
 	setZeroLexeme
@@ -68,28 +72,76 @@ func produceLexemes(input []byte) (output []lexeme, err error) {
 		} else {
 			switch r {
 			case '+':
-				if len(output) > 0 && output[len(output)-1] == incrementOneLexeme {
-					output[len(output)-1] = incrementEightLexeme
-				} else {
-					l = incrementOneLexeme
+				{
+					outputLen := len(output)
+					lastOutput := invalidLexeme
+
+					if outputLen > 0 {
+						lastOutput = output[outputLen-1]
+					}
+
+					switch lastOutput {
+					case modifierLexeme:
+						output[outputLen-1] = stackAddLexeme
+					case addOneLexeme:
+						output[outputLen-1] = addEightLexeme
+					default:
+						l = addOneLexeme
+					}
 				}
 			case '-':
-				if len(output) > 0 && output[len(output)-1] == decrementOneLexeme {
-					output[len(output)-1] = decrementEightLexeme
-				} else {
-					l = decrementOneLexeme
+				{
+					outputLen := len(output)
+					lastOutput := invalidLexeme
+
+					if outputLen > 0 {
+						lastOutput = output[outputLen-1]
+					}
+
+					switch lastOutput {
+					case modifierLexeme:
+						output[outputLen-1] = stackSubtractLexeme
+					case subtractOneLexeme:
+						output[outputLen-1] = subtractEightLexeme
+					default:
+						l = subtractEightLexeme
+					}
 				}
 			case '*':
-				if len(output) > 0 && output[len(output)-1] == multiplyTwoLexeme {
-					output[len(output)-1] = multiplyEightLexeme
-				} else {
-					l = multiplyTwoLexeme
+				{
+					outputLen := len(output)
+					lastOutput := invalidLexeme
+
+					if outputLen > 0 {
+						lastOutput = output[outputLen-1]
+					}
+
+					switch lastOutput {
+					case modifierLexeme:
+						output[outputLen-1] = stackMultiplyLexeme
+					case multiplyTwoLexeme:
+						output[outputLen-1] = multiplyEightLexeme
+					default:
+						l = multiplyTwoLexeme
+					}
 				}
 			case '/':
-				if len(output) > 0 && output[len(output)-1] == divideTwoLexeme {
-					output[len(output)-1] = divideEightLexeme
-				} else {
-					l = divideTwoLexeme
+				{
+					outputLen := len(output)
+					lastOutput := invalidLexeme
+
+					if outputLen > 0 {
+						lastOutput = output[outputLen-1]
+					}
+
+					switch lastOutput {
+					case modifierLexeme:
+						output[outputLen-1] = stackDivideLexeme
+					case divideTwoLexeme:
+						output[outputLen-1] = divideEightLexeme
+					default:
+						l = divideTwoLexeme
+					}
 				}
 			case '^':
 				if len(output) > 0 && output[len(output)-1] == squareLexeme {

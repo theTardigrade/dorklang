@@ -87,22 +87,98 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 	output = input
 
 	switch node.lexeme {
-	case incrementOneLexeme:
+	case addOneLexeme:
 		output++
-	case incrementEightLexeme:
+	case addEightLexeme:
 		output += 8
-	case decrementOneLexeme:
+	case stackAddLexeme:
+		{
+			if node.tree == nil {
+				err = ErrTreeUnfound
+				return
+			}
+
+			if len(node.tree.saveStack) < 2 {
+				err = ErrTreeSaveStackEmpty
+				return
+			}
+
+			augend := node.tree.saveStack[len(node.tree.saveStack)-1]
+			addend := node.tree.saveStack[len(node.tree.saveStack)-2]
+
+			node.tree.saveStack = node.tree.saveStack[:len(node.tree.saveStack)-2]
+
+			output = augend + addend
+		}
+	case subtractOneLexeme:
 		output--
-	case decrementEightLexeme:
+	case subtractEightLexeme:
 		output -= 8
+	case stackSubtractLexeme:
+		{
+			if node.tree == nil {
+				err = ErrTreeUnfound
+				return
+			}
+
+			if len(node.tree.saveStack) < 2 {
+				err = ErrTreeSaveStackEmpty
+				return
+			}
+
+			minuend := node.tree.saveStack[len(node.tree.saveStack)-1]
+			subtrahend := node.tree.saveStack[len(node.tree.saveStack)-2]
+
+			node.tree.saveStack = node.tree.saveStack[:len(node.tree.saveStack)-2]
+
+			output = minuend - subtrahend
+		}
 	case multiplyTwoLexeme:
 		output *= 2
 	case multiplyEightLexeme:
 		output *= 8
+	case stackMultiplyLexeme:
+		{
+			if node.tree == nil {
+				err = ErrTreeUnfound
+				return
+			}
+
+			if len(node.tree.saveStack) < 2 {
+				err = ErrTreeSaveStackEmpty
+				return
+			}
+
+			multiplier := node.tree.saveStack[len(node.tree.saveStack)-1]
+			multiplicand := node.tree.saveStack[len(node.tree.saveStack)-2]
+
+			node.tree.saveStack = node.tree.saveStack[:len(node.tree.saveStack)-2]
+
+			output = multiplier * multiplicand
+		}
 	case divideTwoLexeme:
 		output /= 2
 	case divideEightLexeme:
 		output /= 8
+	case stackDivideLexeme:
+		{
+			if node.tree == nil {
+				err = ErrTreeUnfound
+				return
+			}
+
+			if len(node.tree.saveStack) < 2 {
+				err = ErrTreeSaveStackEmpty
+				return
+			}
+
+			dividend := node.tree.saveStack[len(node.tree.saveStack)-1]
+			divisor := node.tree.saveStack[len(node.tree.saveStack)-2]
+
+			node.tree.saveStack = node.tree.saveStack[:len(node.tree.saveStack)-2]
+
+			output = dividend / divisor
+		}
 	case squareLexeme:
 		output *= output
 	case cubeLexeme:
@@ -321,14 +397,18 @@ func produceTree(input []lexeme) (output *tree, err error) {
 
 				parentNodeStack = parentNodeStack[:len(parentNodeStack)-1]
 			}
-		case incrementOneLexeme,
-			incrementEightLexeme,
-			decrementOneLexeme,
-			decrementEightLexeme,
+		case addOneLexeme,
+			addEightLexeme,
+			stackAddLexeme,
+			subtractOneLexeme,
+			subtractEightLexeme,
+			stackSubtractLexeme,
 			multiplyTwoLexeme,
 			multiplyEightLexeme,
+			stackMultiplyLexeme,
 			divideTwoLexeme,
 			divideEightLexeme,
+			stackDivideLexeme,
 			squareLexeme,
 			cubeLexeme,
 			setZeroLexeme,

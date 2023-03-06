@@ -8,6 +8,8 @@ const (
 	EndAdditionSectionLexeme
 	StartSubtractionSectionLexeme
 	EndSubtractionSectionLexeme
+	StartJumpSectionLexeme
+	EndJumpSectionLexeme
 	IncrementOneLexeme
 	IncrementEightLexeme
 	DecrementOneLexeme
@@ -107,6 +109,20 @@ func produceLexemes(input []byte) (output []Lexeme, err error) {
 				return
 			}
 			if sectionStack[len(sectionStack)-1] != StartSubtractionSectionLexeme {
+				err = ErrOverlapSectionCharacters
+				return
+			}
+			sectionStack = sectionStack[:len(sectionStack)-1]
+		case '<':
+			l = StartJumpSectionLexeme
+			sectionStack = append(sectionStack, l)
+		case '>':
+			l = EndJumpSectionLexeme
+			if len(sectionStack) == 0 {
+				err = ErrNoMatchSectionCharacters
+				return
+			}
+			if sectionStack[len(sectionStack)-1] != StartJumpSectionLexeme {
 				err = ErrOverlapSectionCharacters
 				return
 			}

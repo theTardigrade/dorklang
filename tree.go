@@ -35,6 +35,17 @@ func (node *ParentTreeNode) Value(input uint8) (output uint8, err error) {
 	output = input
 
 	switch node.Lexeme {
+	case StartJumpSectionLexeme:
+		{
+			for output > 0 {
+				for _, node := range node.ChildNodes {
+					output, err = node.Value(output)
+					if err != nil {
+						return
+					}
+				}
+			}
+		}
 	case StartAdditionSectionLexeme,
 		StartSubtractionSectionLexeme:
 		{
@@ -128,7 +139,8 @@ func produceTree(input []Lexeme) (output *Tree, err error) {
 	for _, l := range input {
 		switch l {
 		case StartAdditionSectionLexeme,
-			StartSubtractionSectionLexeme:
+			StartSubtractionSectionLexeme,
+			StartJumpSectionLexeme:
 			{
 				nextNode := &ParentTreeNode{
 					Lexeme: l,
@@ -146,7 +158,8 @@ func produceTree(input []Lexeme) (output *Tree, err error) {
 				parentNodeStack = append(parentNodeStack, nextNode)
 			}
 		case EndAdditionSectionLexeme,
-			EndSubtractionSectionLexeme:
+			EndSubtractionSectionLexeme,
+			EndJumpSectionLexeme:
 			{
 				if len(parentNodeStack) == 0 {
 					err = ErrTreeParentNodeUnfound

@@ -27,6 +27,8 @@ const (
 	setEightNybbleLexeme
 	setOneByteLexeme
 	setEightByteLexeme
+	setSecondTimestampLexeme
+	setNanosecondTimestampLexeme
 	printCharacterLexeme
 	printNumberLexeme
 	inputCharacterLexeme
@@ -109,6 +111,12 @@ func produceLexemes(input []byte) (output []lexeme, err error) {
 					output[len(output)-1] = setEightByteLexeme
 				} else {
 					l = setOneByteLexeme
+				}
+			case '@':
+				if len(output) > 0 && output[len(output)-1] == setSecondTimestampLexeme {
+					output[len(output)-1] = setNanosecondTimestampLexeme
+				} else {
+					l = setSecondTimestampLexeme
 				}
 			case ':':
 				l = saveLexeme

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 )
 
 type tree struct {
@@ -122,6 +123,10 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 		output = 256
 	case setEightByteLexeme:
 		output = 256 * 8 // 2048
+	case setSecondTimestampLexeme:
+		output = uint64(time.Now().Unix())
+	case setNanosecondTimestampLexeme:
+		output = uint64(time.Now().UnixNano())
 	case saveLexeme:
 		if node.tree == nil {
 			err = ErrTreeUnfound
@@ -203,6 +208,9 @@ func produceTree(input []lexeme) (output *tree, err error) {
 			setOneNybbleLexeme,
 			setEightNybbleLexeme,
 			setOneByteLexeme,
+			setEightByteLexeme,
+			setSecondTimestampLexeme,
+			setNanosecondTimestampLexeme,
 			printCharacterLexeme,
 			printNumberLexeme,
 			inputCharacterLexeme,

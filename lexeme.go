@@ -22,9 +22,9 @@ const (
 	divideEightLexeme
 	squareLexeme
 	cubeLexeme
-	minimumLexeme
-	middleLexeme
-	maximumLexeme
+	setZeroLexeme
+	setHalfByteLexeme
+	setByteLexeme
 	printCharacterLexeme
 	printNumberLexeme
 	inputCharacterLexeme
@@ -95,11 +95,11 @@ func produceLexemes(input []byte) (output []lexeme, err error) {
 					l = inputCharacterLexeme
 				}
 			case '\'':
-				l = minimumLexeme
+				l = setZeroLexeme
 			case '~':
-				l = middleLexeme
+				l = setHalfByteLexeme
 			case '"':
-				l = maximumLexeme
+				l = setByteLexeme
 			case ':':
 				l = saveLexeme
 			case ';':

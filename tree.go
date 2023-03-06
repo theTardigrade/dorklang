@@ -97,18 +97,26 @@ func (node *terminalTreeNode) value(input uint8) (output uint8, err error) {
 	case cubeLexeme:
 		output *= output * output
 	case printCharacterLexeme:
-		fmt.Printf("%c", output)
+		if _, err = fmt.Printf("%c", output); err != nil {
+			return
+		}
 	case printNumberLexeme:
-		fmt.Printf("%d", output)
+		if _, err = fmt.Printf("%d", output); err != nil {
+			return
+		}
 	case inputCharacterLexeme:
-		fmt.Scanf("%c", &output)
+		if _, err = fmt.Scanf("%c", &output); err != nil {
+			return
+		}
 	case inputNumberLexeme:
-		fmt.Scanf("%d", &output)
-	case minimumLexeme:
+		if _, err = fmt.Scanf("%d", &output); err != nil {
+			return
+		}
+	case setZeroLexeme:
 		output = 0
-	case middleLexeme:
+	case setHalfByteLexeme:
 		output = 128
-	case maximumLexeme:
+	case setByteLexeme:
 		output = 255
 	case saveLexeme:
 		if node.tree == nil {
@@ -187,9 +195,9 @@ func produceTree(input []lexeme) (output *tree, err error) {
 			divideEightLexeme,
 			squareLexeme,
 			cubeLexeme,
-			minimumLexeme,
-			middleLexeme,
-			maximumLexeme,
+			setZeroLexeme,
+			setHalfByteLexeme,
+			setByteLexeme,
 			printCharacterLexeme,
 			printNumberLexeme,
 			inputCharacterLexeme,

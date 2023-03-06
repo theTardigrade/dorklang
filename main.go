@@ -5,12 +5,12 @@ import (
 )
 
 func main() {
-	sourceFileContents, err := os.ReadFile(*fileFlag)
+	fileContents, err := os.ReadFile(*fileFlag)
 	if err != nil {
 		panic(err)
 	}
 
-	lexemes, err := produceLexemes(sourceFileContents)
+	lexemes, err := produceLexemes(fileContents)
 	if err != nil {
 		panic(err)
 	}

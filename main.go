@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 )
 
@@ -15,7 +14,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(lexemes)
 
 	tree, err := produceTree(lexemes)
 	if err != nil {

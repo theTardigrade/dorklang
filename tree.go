@@ -121,6 +121,28 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 
 			output = augend + addend
 		}
+	case addStackWholeLexeme:
+		{
+			if node.tree == nil {
+				err = ErrTreeUnfound
+				return
+			}
+
+			if len(node.tree.saveStack) == 0 {
+				err = ErrTreeSaveStackEmpty
+				return
+			}
+
+			var sum uint64
+
+			for i := len(node.tree.saveStack) - 1; i >= 0; i-- {
+				sum += node.tree.saveStack[i]
+			}
+
+			node.tree.saveStack = node.tree.saveStack[:0]
+
+			output = sum
+		}
 	case subtractOneLexeme:
 		output--
 	case subtractEightLexeme:
@@ -143,6 +165,28 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 			node.tree.saveStack = node.tree.saveStack[:len(node.tree.saveStack)-2]
 
 			output = minuend - subtrahend
+		}
+	case subtractStackWholeLexeme:
+		{
+			if node.tree == nil {
+				err = ErrTreeUnfound
+				return
+			}
+
+			if len(node.tree.saveStack) == 0 {
+				err = ErrTreeSaveStackEmpty
+				return
+			}
+
+			subtraction := node.tree.saveStack[len(node.tree.saveStack)-1]
+
+			for i := len(node.tree.saveStack) - 2; i >= 0; i-- {
+				subtraction -= node.tree.saveStack[i]
+			}
+
+			node.tree.saveStack = node.tree.saveStack[:0]
+
+			output = subtraction
 		}
 	case multiplyTwoLexeme:
 		output *= 2
@@ -189,28 +233,6 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 			node.tree.saveStack = node.tree.saveStack[:len(node.tree.saveStack)-2]
 
 			output = dividend / divisor
-		}
-	case sumStackLexeme:
-		{
-			if node.tree == nil {
-				err = ErrTreeUnfound
-				return
-			}
-
-			if len(node.tree.saveStack) == 0 {
-				err = ErrTreeSaveStackEmpty
-				return
-			}
-
-			var sum uint64
-
-			for i := len(node.tree.saveStack) - 1; i >= 0; i-- {
-				sum += node.tree.saveStack[i]
-			}
-
-			node.tree.saveStack = node.tree.saveStack[:0]
-
-			output = sum
 		}
 	case squareLexeme:
 		output *= output
@@ -435,6 +457,7 @@ func produceTree(input []lexeme) (output *tree, err error) {
 		case addOneLexeme,
 			addEightLexeme,
 			addStackPairLexeme,
+			addStackWholeLexeme,
 			subtractOneLexeme,
 			subtractEightLexeme,
 			subtractStackPairLexeme,
@@ -444,7 +467,6 @@ func produceTree(input []lexeme) (output *tree, err error) {
 			divideTwoLexeme,
 			divideEightLexeme,
 			divideStackPairLexeme,
-			sumStackLexeme,
 			squareLexeme,
 			cubeLexeme,
 			setZeroLexeme,

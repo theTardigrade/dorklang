@@ -17,16 +17,17 @@ const (
 	addOneLexeme
 	addEightLexeme
 	addStackPairLexeme
+	addStackWholeLexeme
 	subtractOneLexeme
 	subtractEightLexeme
 	subtractStackPairLexeme
+	subtractStackWholeLexeme
 	multiplyTwoLexeme
 	multiplyEightLexeme
 	multiplyStackPairLexeme
 	divideTwoLexeme
 	divideEightLexeme
 	divideStackPairLexeme
-	sumStackLexeme
 	squareLexeme
 	cubeLexeme
 	setZeroLexeme
@@ -84,6 +85,8 @@ func produceLexemes(input []byte) (output []lexeme, err error) {
 					}
 
 					switch lastOutput {
+					case addStackPairLexeme:
+						output[outputLen-1] = addStackWholeLexeme
 					case modifierLexeme:
 						output[outputLen-1] = addStackPairLexeme
 					case addOneLexeme:
@@ -102,6 +105,8 @@ func produceLexemes(input []byte) (output []lexeme, err error) {
 					}
 
 					switch lastOutput {
+					case subtractStackPairLexeme:
+						output[outputLen-1] = subtractStackWholeLexeme
 					case modifierLexeme:
 						output[outputLen-1] = subtractStackPairLexeme
 					case subtractOneLexeme:
@@ -226,8 +231,6 @@ func produceLexemes(input []byte) (output []lexeme, err error) {
 				l = writeStackToFileLexeme
 			case ',':
 				l = readStackFromFileLexeme
-			case '$':
-				l = sumStackLexeme
 			case '|':
 				if len(output) > 0 && output[len(output)-1] == deleteFileLexeme {
 					output[len(output)-1] = clearStackLexeme

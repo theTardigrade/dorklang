@@ -111,10 +111,13 @@ func produceLexemes(input []byte) (output []Lexeme, err error) {
 				return
 			}
 			sectionStack = sectionStack[:len(sectionStack)-1]
-		default:
+		case ' ', '\n', '\r', '\t', '\v', '\f', 0x85, 0xa0:
 			if len(output) == 0 || output[len(output)-1] != SeparatorLexeme {
 				l = SeparatorLexeme
 			}
+		default:
+			err = ErrLexemeUnrecognized
+			return
 		}
 
 		if l != InvalidLexeme {

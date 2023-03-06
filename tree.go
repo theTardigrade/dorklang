@@ -6,6 +6,8 @@ import (
 	"os"
 	"strconv"
 	"time"
+
+	hash "github.com/theTardigrade/golang-hash"
 )
 
 const (
@@ -182,6 +184,25 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 				return
 			}
 		}
+	case hashStackLexeme:
+		{
+			if node.tree == nil {
+				err = ErrTreeUnfound
+				return
+			}
+
+			var contentBuilder bytes.Buffer
+
+			for _, value := range node.tree.saveStack {
+				if _, err = contentBuilder.WriteRune(rune(value)); err != nil {
+					return
+				}
+			}
+
+			content := contentBuilder.Bytes()
+
+			output = hash.Uint64(content)
+		}
 	case loadFromFileLexeme:
 		{
 			if node.tree == nil {
@@ -294,6 +315,7 @@ func produceTree(input []lexeme) (output *tree, err error) {
 			inputNumberLexeme,
 			saveToStackLexeme,
 			loadFromStackLexeme,
+			hashStackLexeme,
 			writeToFileLexeme,
 			loadFromFileLexeme,
 			deleteFileLexeme:

@@ -211,6 +211,28 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 
 			output = multiplier * multiplicand
 		}
+	case multipleStackWholeLexeme:
+		{
+			if node.tree == nil {
+				err = ErrTreeUnfound
+				return
+			}
+
+			if len(node.tree.saveStack) == 0 {
+				err = ErrTreeSaveStackEmpty
+				return
+			}
+
+			product := node.tree.saveStack[len(node.tree.saveStack)-1]
+
+			for i := len(node.tree.saveStack) - 2; i >= 0; i-- {
+				product *= node.tree.saveStack[i]
+			}
+
+			node.tree.saveStack = node.tree.saveStack[:0]
+
+			output = product
+		}
 	case divideTwoLexeme:
 		output /= 2
 	case divideEightLexeme:
@@ -233,6 +255,28 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 			node.tree.saveStack = node.tree.saveStack[:len(node.tree.saveStack)-2]
 
 			output = dividend / divisor
+		}
+	case divideStackWholeLexeme:
+		{
+			if node.tree == nil {
+				err = ErrTreeUnfound
+				return
+			}
+
+			if len(node.tree.saveStack) == 0 {
+				err = ErrTreeSaveStackEmpty
+				return
+			}
+
+			division := node.tree.saveStack[len(node.tree.saveStack)-1]
+
+			for i := len(node.tree.saveStack) - 2; i >= 0; i-- {
+				division %= node.tree.saveStack[i]
+			}
+
+			node.tree.saveStack = node.tree.saveStack[:0]
+
+			output = division
 		}
 	case squareLexeme:
 		output *= output
@@ -461,12 +505,15 @@ func produceTree(input []lexeme) (output *tree, err error) {
 			subtractOneLexeme,
 			subtractEightLexeme,
 			subtractStackPairLexeme,
+			subtractStackWholeLexeme,
 			multiplyTwoLexeme,
 			multiplyEightLexeme,
 			multiplyStackPairLexeme,
+			multipleStackWholeLexeme,
 			divideTwoLexeme,
 			divideEightLexeme,
 			divideStackPairLexeme,
+			divideStackWholeLexeme,
 			squareLexeme,
 			cubeLexeme,
 			setZeroLexeme,

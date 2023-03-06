@@ -25,9 +25,11 @@ const (
 	multiplyTwoLexeme
 	multiplyEightLexeme
 	multiplyStackPairLexeme
+	multipleStackWholeLexeme
 	divideTwoLexeme
 	divideEightLexeme
 	divideStackPairLexeme
+	divideStackWholeLexeme
 	squareLexeme
 	cubeLexeme
 	setZeroLexeme
@@ -125,6 +127,8 @@ func produceLexemes(input []byte) (output []lexeme, err error) {
 					}
 
 					switch lastOutput {
+					case multiplyStackPairLexeme:
+						output[outputLen-1] = multipleStackWholeLexeme
 					case modifierLexeme:
 						output[outputLen-1] = multiplyStackPairLexeme
 					case multiplyTwoLexeme:
@@ -143,6 +147,8 @@ func produceLexemes(input []byte) (output []lexeme, err error) {
 					}
 
 					switch lastOutput {
+					case multiplyStackPairLexeme:
+						output[outputLen-1] = multipleStackWholeLexeme
 					case modifierLexeme:
 						output[outputLen-1] = divideStackPairLexeme
 					case divideTwoLexeme:

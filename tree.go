@@ -5,7 +5,8 @@ import (
 )
 
 type Tree struct {
-	RootNode *ParentTreeNode
+	RootNode   *ParentTreeNode
+	savedValue uint8
 }
 
 type TreeNode interface {
@@ -14,11 +15,13 @@ type TreeNode interface {
 
 type ParentTreeNode struct {
 	Lexeme     Lexeme
+	Tree       *Tree
 	ChildNodes []TreeNode
 }
 
 type TerminalTreeNode struct {
 	Lexeme     Lexeme
+	Tree       *Tree
 	ParentNode *ParentTreeNode
 }
 
@@ -89,6 +92,20 @@ func (node *TerminalTreeNode) Value(input uint8) (output uint8, err error) {
 		output = 128
 	case MaximumLexeme:
 		output = 255
+	case SaveLexeme:
+		if node.Tree == nil {
+			err = ErrTreeUnfound
+			return
+		}
+
+		node.Tree.savedValue = output
+	case LoadLexeme:
+		if node.Tree == nil {
+			err = ErrTreeUnfound
+			return
+		}
+
+		output = node.Tree.savedValue
 	default:
 		err = ErrLexemeUnrecognized
 	}
@@ -106,6 +123,7 @@ func produceTree(input []Lexeme) (output *Tree, err error) {
 
 	output = new(Tree)
 	output.RootNode = rootNode
+	rootNode.Tree = output
 
 	for _, l := range input {
 		switch l {
@@ -114,6 +132,7 @@ func produceTree(input []Lexeme) (output *Tree, err error) {
 			{
 				nextNode := &ParentTreeNode{
 					Lexeme: l,
+					Tree:   output,
 				}
 
 				if len(parentNodeStack) == 0 {
@@ -150,10 +169,13 @@ func produceTree(input []Lexeme) (output *Tree, err error) {
 			MiddleLexeme,
 			MaximumLexeme,
 			PrintCharacterLexeme,
-			PrintNumberLexeme:
+			PrintNumberLexeme,
+			SaveLexeme,
+			LoadLexeme:
 			{
 				nextNode := &TerminalTreeNode{
 					Lexeme: l,
+					Tree:   output,
 				}
 
 				if len(parentNodeStack) == 0 {
@@ -165,6 +187,10 @@ func produceTree(input []Lexeme) (output *Tree, err error) {
 				nextParentNode.ChildNodes = append(nextParentNode.ChildNodes, nextNode)
 				nextNode.ParentNode = nextParentNode
 			}
+		case SeparatorLexeme:
+		default:
+			err = ErrLexemeUnrecognized
+			return
 		}
 	}
 

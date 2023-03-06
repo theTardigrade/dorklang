@@ -502,11 +502,18 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 			}
 			saveStack := *saveStackPtr
 
-			*saveStackPtr = saveStack[:0]
+			saveStack = saveStack[:0]
 
 			for _, value := range string(content) {
-				*saveStackPtr = append(saveStack, uint64(value))
+				if len(saveStack) == treeSaveStackMaxLen {
+					err = ErrTreeSaveStackFull
+					return
+				}
+
+				saveStack = append(saveStack, uint64(value))
 			}
+
+			*saveStackPtr = saveStack
 		}
 	case hashStackOneByteLexeme:
 		{

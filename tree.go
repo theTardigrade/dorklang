@@ -6,11 +6,11 @@ import (
 
 type tree struct {
 	rootNode   *parentTreeNode
-	savedValue uint8
+	savedValue uint64
 }
 
 type treeNode interface {
-	value(uint8) (uint8, error)
+	value(uint64) (uint64, error)
 }
 
 type parentTreeNode struct {
@@ -31,7 +31,7 @@ func (tree *tree) Run() (err error) {
 	return
 }
 
-func (node *parentTreeNode) value(input uint8) (output uint8, err error) {
+func (node *parentTreeNode) value(input uint64) (output uint64, err error) {
 	output = input
 
 	switch node.lexeme {
@@ -49,7 +49,7 @@ func (node *parentTreeNode) value(input uint8) (output uint8, err error) {
 	case startAdditionSectionLexeme,
 		startSubtractionSectionLexeme:
 		{
-			var localOutput uint8
+			var localOutput uint64
 
 			for _, node := range node.childNodes {
 				localOutput, err = node.value(localOutput)
@@ -72,7 +72,7 @@ func (node *parentTreeNode) value(input uint8) (output uint8, err error) {
 	return
 }
 
-func (node *terminalTreeNode) value(input uint8) (output uint8, err error) {
+func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 	output = input
 
 	switch node.lexeme {
@@ -117,7 +117,7 @@ func (node *terminalTreeNode) value(input uint8) (output uint8, err error) {
 	case setHalfByteLexeme:
 		output = 128
 	case setByteLexeme:
-		output = 255
+		output = 256
 	case saveLexeme:
 		if node.tree == nil {
 			err = ErrTreeUnfound

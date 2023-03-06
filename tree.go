@@ -70,6 +70,8 @@ func (node *TerminalTreeNode) Value(input uint8) (output uint8, err error) {
 		output /= 2
 	case SquareLexeme:
 		output *= output
+	case CubeLexeme:
+		output *= output * output
 	case PrintCharacterLexeme:
 		fmt.Printf("%c", input)
 	case PrintNumberLexeme:

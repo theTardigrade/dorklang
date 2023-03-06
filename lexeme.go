@@ -15,6 +15,7 @@ const (
 	DoubleLexeme
 	HalfLexeme
 	SquareLexeme
+	CubeLexeme
 	MinLexeme
 	MaxLexeme
 	PrintCharacterLexeme
@@ -45,7 +46,11 @@ func produceLexemes(input []byte) (output []Lexeme, err error) {
 			case '/':
 				l = HalfLexeme
 			case '^':
-				l = SquareLexeme
+				if len(output) > 0 && output[len(output)-1] == SquareLexeme {
+					output[len(output)-1] = CubeLexeme
+				} else {
+					l = SquareLexeme
+				}
 			case '!':
 				if len(output) > 0 && output[len(output)-1] == PrintCharacterLexeme {
 					output[len(output)-1] = PrintNumberLexeme

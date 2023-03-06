@@ -66,8 +66,12 @@ func (node *TerminalTreeNode) Value(input uint8) (output uint8, err error) {
 		output -= 1
 	case DoubleLexeme:
 		output *= 2
+	case TripleLexeme:
+		output *= 3
 	case HalfLexeme:
 		output /= 2
+	case ThirdLexeme:
+		output /= 3
 	case SquareLexeme:
 		output *= output
 	case CubeLexeme:

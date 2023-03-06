@@ -13,7 +13,9 @@ const (
 	IncrementLexexme
 	DecrementLexeme
 	DoubleLexeme
+	TripleLexeme
 	HalfLexeme
+	ThirdLexeme
 	SquareLexeme
 	CubeLexeme
 	MinLexeme
@@ -42,9 +44,17 @@ func produceLexemes(input []byte) (output []Lexeme, err error) {
 			case '-':
 				l = DecrementLexeme
 			case '*':
-				l = DoubleLexeme
+				if len(output) > 0 && output[len(output)-1] == DoubleLexeme {
+					output[len(output)-1] = TripleLexeme
+				} else {
+					l = DoubleLexeme
+				}
 			case '/':
-				l = HalfLexeme
+				if len(output) > 0 && output[len(output)-1] == HalfLexeme {
+					output[len(output)-1] = ThirdLexeme
+				} else {
+					l = HalfLexeme
+				}
 			case '^':
 				if len(output) > 0 && output[len(output)-1] == SquareLexeme {
 					output[len(output)-1] = CubeLexeme

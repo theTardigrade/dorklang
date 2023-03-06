@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"math"
 )
 
 type Tree struct {
@@ -84,10 +83,12 @@ func (node *TerminalTreeNode) Value(input uint8) (output uint8, err error) {
 		fmt.Printf("%c", input)
 	case PrintNumberLexeme:
 		fmt.Printf("%d", input)
-	case MinLexeme:
+	case MinimumLexeme:
 		output = 0
-	case MaxLexeme:
-		output = math.MaxUint8
+	case MiddleLexeme:
+		output = 128
+	case MaximumLexeme:
+		output = 255
 	default:
 		err = ErrLexemeUnrecognized
 	}
@@ -145,8 +146,9 @@ func produceTree(input []Lexeme) (output *Tree, err error) {
 			DivideEightLexeme,
 			SquareLexeme,
 			CubeLexeme,
-			MinLexeme,
-			MaxLexeme,
+			MinimumLexeme,
+			MiddleLexeme,
+			MaximumLexeme,
 			PrintCharacterLexeme,
 			PrintNumberLexeme:
 			{

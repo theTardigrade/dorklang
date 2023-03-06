@@ -41,8 +41,8 @@ const (
 	printNumberLexeme
 	inputCharacterLexeme
 	inputNumberLexeme
-	writeToFileLexeme
-	loadFromFileLexeme
+	writeStackToFileLexeme
+	readStackFromFileLexeme
 	deleteFileLexeme
 	clearStackLexeme
 	saveToStackLexeme
@@ -220,9 +220,9 @@ func produceLexemes(input []byte) (output []lexeme, err error) {
 					l = hashStackOneByteLexeme
 				}
 			case '.':
-				l = writeToFileLexeme
+				l = writeStackToFileLexeme
 			case ',':
-				l = loadFromFileLexeme
+				l = readStackFromFileLexeme
 			case '|':
 				if len(output) > 0 && output[len(output)-1] == deleteFileLexeme {
 					output[len(output)-1] = clearStackLexeme

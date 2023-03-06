@@ -49,8 +49,8 @@ Below is an overview of all the commands that can be used in **dorklang** source
 | `%""` | Sets the current value to the size of eight gibibytes (i.e. `68_719_476_736`). |
 | `@` | Sets the current value to the number of seconds in a UNIX-timestamp representation of the current time. |
 | `@@` | Sets the current value to the number of nanoseconds in a UNIX-timestamp representation of the current time. |
-| `$` | Uses the first of a pair of stacks when calling further commands that make use of a stack. |
-| `$$` | Uses the second of a pair of stacks when calling further commands that make use of a stack. |
+| `$` | Uses the first of two stacks when calling further commands that make use of a stack. |
+| `$$` | Uses the second of two stacks when calling further commands that make use of a stack. |
 | `:` | Pushes the current value to the current stack. |
 | `;` | Sets the current value to a value popped from the current stack. |
 | `#` | Pops all the values from the current stack, performs an 8-bit hash on them and sets the current value to the result. |

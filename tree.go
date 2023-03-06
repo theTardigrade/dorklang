@@ -1,12 +1,16 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"os"
+	"strconv"
 	"time"
 )
 
 const (
-	treeSaveStackMaxLen = 1 << 20 // 1_048_576
+	treeSaveFileExtension = ".dork.txt"
+	treeSaveStackMaxLen   = 1 << 20 // 1_048_576
 )
 
 type tree struct {
@@ -131,7 +135,7 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 		output = uint64(time.Now().Unix())
 	case setNanosecondTimestampLexeme:
 		output = uint64(time.Now().UnixNano())
-	case saveLexeme:
+	case saveToStackLexeme:
 		if node.tree == nil {
 			err = ErrTreeUnfound
 			return
@@ -143,7 +147,7 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 		}
 
 		node.tree.saveStack = append(node.tree.saveStack, output)
-	case loadLexeme:
+	case loadFromStackLexeme:
 		if node.tree == nil {
 			err = ErrTreeUnfound
 			return
@@ -156,6 +160,62 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 
 		output = node.tree.saveStack[len(node.tree.saveStack)-1]
 		node.tree.saveStack = node.tree.saveStack[:len(node.tree.saveStack)-1]
+	case writeToFileLexeme:
+		{
+			if node.tree == nil {
+				err = ErrTreeUnfound
+				return
+			}
+
+			var contentBuilder bytes.Buffer
+
+			for _, value := range node.tree.saveStack {
+				if _, err = contentBuilder.WriteRune(rune(value)); err != nil {
+					return
+				}
+			}
+
+			content := contentBuilder.Bytes()
+			fileName := strconv.FormatUint(output, 10) + treeSaveFileExtension
+
+			if err = os.WriteFile(fileName, content, os.ModePerm); err != nil {
+				return
+			}
+		}
+	case loadFromFileLexeme:
+		{
+			if node.tree == nil {
+				err = ErrTreeUnfound
+				return
+			}
+
+			var content []byte
+
+			fileName := strconv.FormatUint(output, 10) + treeSaveFileExtension
+			content, err = os.ReadFile(fileName)
+			if err != nil {
+				return
+			}
+
+			node.tree.saveStack = node.tree.saveStack[:0]
+
+			for _, value := range string(content) {
+				node.tree.saveStack = append(node.tree.saveStack, uint64(value))
+			}
+		}
+	case deleteFileLexeme:
+		{
+			if node.tree == nil {
+				err = ErrTreeUnfound
+				return
+			}
+
+			fileName := strconv.FormatUint(output, 10) + treeSaveFileExtension
+
+			if err = os.Remove(fileName); err != nil {
+				return
+			}
+		}
 	default:
 		err = ErrLexemeUnrecognized
 	}
@@ -232,8 +292,11 @@ func produceTree(input []lexeme) (output *tree, err error) {
 			printNumberLexeme,
 			inputCharacterLexeme,
 			inputNumberLexeme,
-			saveLexeme,
-			loadLexeme:
+			saveToStackLexeme,
+			loadFromStackLexeme,
+			writeToFileLexeme,
+			loadFromFileLexeme,
+			deleteFileLexeme:
 			{
 				nextNode := &terminalTreeNode{
 					lexeme: l,

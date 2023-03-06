@@ -33,8 +33,11 @@ const (
 	printNumberLexeme
 	inputCharacterLexeme
 	inputNumberLexeme
-	saveLexeme
-	loadLexeme
+	writeToFileLexeme
+	loadFromFileLexeme
+	deleteFileLexeme
+	saveToStackLexeme
+	loadFromStackLexeme
 	separatorLexeme
 )
 
@@ -119,9 +122,15 @@ func produceLexemes(input []byte) (output []lexeme, err error) {
 					l = setSecondTimestampLexeme
 				}
 			case ':':
-				l = saveLexeme
+				l = saveToStackLexeme
 			case ';':
-				l = loadLexeme
+				l = loadFromStackLexeme
+			case '.':
+				l = writeToFileLexeme
+			case ',':
+				l = loadFromFileLexeme
+			case '|':
+				l = deleteFileLexeme
 			case '(':
 				l = startAdditionSectionLexeme
 				sectionStack = append(sectionStack, l)

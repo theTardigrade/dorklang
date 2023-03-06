@@ -184,7 +184,26 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 				return
 			}
 		}
-	case hashStackLexeme:
+	case hashStackOneByteLexeme:
+		{
+			if node.tree == nil {
+				err = ErrTreeUnfound
+				return
+			}
+
+			var contentBuilder bytes.Buffer
+
+			for _, value := range node.tree.saveStack {
+				if _, err = contentBuilder.WriteRune(rune(value)); err != nil {
+					return
+				}
+			}
+
+			content := contentBuilder.Bytes()
+
+			output = uint64(hash.Uint8(content))
+		}
+	case hashStackEightByteLexeme:
 		{
 			if node.tree == nil {
 				err = ErrTreeUnfound
@@ -315,7 +334,8 @@ func produceTree(input []lexeme) (output *tree, err error) {
 			inputNumberLexeme,
 			saveToStackLexeme,
 			loadFromStackLexeme,
-			hashStackLexeme,
+			hashStackOneByteLexeme,
+			hashStackEightByteLexeme,
 			writeToFileLexeme,
 			loadFromFileLexeme,
 			deleteFileLexeme:

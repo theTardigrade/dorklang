@@ -38,7 +38,8 @@ const (
 	deleteFileLexeme
 	saveToStackLexeme
 	loadFromStackLexeme
-	hashStackLexeme
+	hashStackOneByteLexeme
+	hashStackEightByteLexeme
 	separatorLexeme
 )
 
@@ -127,7 +128,11 @@ func produceLexemes(input []byte) (output []lexeme, err error) {
 			case ';':
 				l = loadFromStackLexeme
 			case '#':
-				l = hashStackLexeme
+				if len(output) > 0 && output[len(output)-1] == hashStackOneByteLexeme {
+					output[len(output)-1] = hashStackEightByteLexeme
+				} else {
+					l = hashStackOneByteLexeme
+				}
 			case '.':
 				l = writeToFileLexeme
 			case ',':

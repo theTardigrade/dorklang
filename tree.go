@@ -16,8 +16,9 @@ const (
 )
 
 type tree struct {
-	rootNode  *parentTreeNode
-	saveStack []uint64
+	rootNode       *parentTreeNode
+	saveStackIndex uint64
+	saveStacks     [2][]uint64
 }
 
 type treeNode interface {
@@ -38,6 +39,28 @@ type terminalTreeNode struct {
 
 func (tree *tree) Run() (err error) {
 	_, err = tree.rootNode.value(0)
+
+	return
+}
+
+func (tree *tree) saveStackPtr() (stackPtr *[]uint64, err error) {
+	if tree.saveStackIndex >= uint64(len(tree.saveStacks)) {
+		err = ErrTreeSaveStackIndexInvalid
+		return
+	}
+
+	stackPtr = &tree.saveStacks[tree.saveStackIndex]
+
+	return
+}
+
+func (tree *tree) saveStack() (stack []uint64, err error) {
+	if tree.saveStackIndex >= uint64(len(tree.saveStacks)) {
+		err = ErrTreeSaveStackIndexInvalid
+		return
+	}
+
+	stack = tree.saveStacks[tree.saveStackIndex]
 
 	return
 }
@@ -109,15 +132,22 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 				return
 			}
 
-			if len(node.tree.saveStack) < 2 {
+			var saveStackPtr *[]uint64
+			saveStackPtr, err = node.tree.saveStackPtr()
+			if err != nil {
+				return
+			}
+			saveStack := *saveStackPtr
+
+			if len(saveStack) < 2 {
 				err = ErrTreeSaveStackEmpty
 				return
 			}
 
-			augend := node.tree.saveStack[len(node.tree.saveStack)-1]
-			addend := node.tree.saveStack[len(node.tree.saveStack)-2]
+			augend := saveStack[len(saveStack)-1]
+			addend := saveStack[len(saveStack)-2]
 
-			node.tree.saveStack = node.tree.saveStack[:len(node.tree.saveStack)-2]
+			*saveStackPtr = saveStack[:len(saveStack)-2]
 
 			output = augend + addend
 		}
@@ -128,18 +158,25 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 				return
 			}
 
-			if len(node.tree.saveStack) == 0 {
+			var saveStackPtr *[]uint64
+			saveStackPtr, err = node.tree.saveStackPtr()
+			if err != nil {
+				return
+			}
+			saveStack := *saveStackPtr
+
+			if len(saveStack) == 0 {
 				err = ErrTreeSaveStackEmpty
 				return
 			}
 
 			var sum uint64
 
-			for i := len(node.tree.saveStack) - 1; i >= 0; i-- {
-				sum += node.tree.saveStack[i]
+			for i := len(saveStack) - 1; i >= 0; i-- {
+				sum += saveStack[i]
 			}
 
-			node.tree.saveStack = node.tree.saveStack[:0]
+			*saveStackPtr = saveStack[:0]
 
 			output = sum
 		}
@@ -154,15 +191,22 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 				return
 			}
 
-			if len(node.tree.saveStack) < 2 {
+			var saveStackPtr *[]uint64
+			saveStackPtr, err = node.tree.saveStackPtr()
+			if err != nil {
+				return
+			}
+			saveStack := *saveStackPtr
+
+			if len(saveStack) < 2 {
 				err = ErrTreeSaveStackEmpty
 				return
 			}
 
-			minuend := node.tree.saveStack[len(node.tree.saveStack)-1]
-			subtrahend := node.tree.saveStack[len(node.tree.saveStack)-2]
+			minuend := saveStack[len(saveStack)-1]
+			subtrahend := saveStack[len(saveStack)-2]
 
-			node.tree.saveStack = node.tree.saveStack[:len(node.tree.saveStack)-2]
+			*saveStackPtr = saveStack[:len(saveStack)-2]
 
 			output = minuend - subtrahend
 		}
@@ -173,18 +217,25 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 				return
 			}
 
-			if len(node.tree.saveStack) == 0 {
+			var saveStackPtr *[]uint64
+			saveStackPtr, err = node.tree.saveStackPtr()
+			if err != nil {
+				return
+			}
+			saveStack := *saveStackPtr
+
+			if len(saveStack) == 0 {
 				err = ErrTreeSaveStackEmpty
 				return
 			}
 
-			subtraction := node.tree.saveStack[len(node.tree.saveStack)-1]
+			subtraction := saveStack[len(saveStack)-1]
 
-			for i := len(node.tree.saveStack) - 2; i >= 0; i-- {
-				subtraction -= node.tree.saveStack[i]
+			for i := len(saveStack) - 2; i >= 0; i-- {
+				subtraction -= saveStack[i]
 			}
 
-			node.tree.saveStack = node.tree.saveStack[:0]
+			*saveStackPtr = saveStack[:0]
 
 			output = subtraction
 		}
@@ -199,15 +250,22 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 				return
 			}
 
-			if len(node.tree.saveStack) < 2 {
+			var saveStackPtr *[]uint64
+			saveStackPtr, err = node.tree.saveStackPtr()
+			if err != nil {
+				return
+			}
+			saveStack := *saveStackPtr
+
+			if len(saveStack) < 2 {
 				err = ErrTreeSaveStackEmpty
 				return
 			}
 
-			multiplier := node.tree.saveStack[len(node.tree.saveStack)-1]
-			multiplicand := node.tree.saveStack[len(node.tree.saveStack)-2]
+			multiplier := saveStack[len(saveStack)-1]
+			multiplicand := saveStack[len(saveStack)-2]
 
-			node.tree.saveStack = node.tree.saveStack[:len(node.tree.saveStack)-2]
+			*saveStackPtr = saveStack[:len(saveStack)-2]
 
 			output = multiplier * multiplicand
 		}
@@ -218,18 +276,25 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 				return
 			}
 
-			if len(node.tree.saveStack) == 0 {
+			var saveStackPtr *[]uint64
+			saveStackPtr, err = node.tree.saveStackPtr()
+			if err != nil {
+				return
+			}
+			saveStack := *saveStackPtr
+
+			if len(saveStack) == 0 {
 				err = ErrTreeSaveStackEmpty
 				return
 			}
 
-			product := node.tree.saveStack[len(node.tree.saveStack)-1]
+			product := saveStack[len(saveStack)-1]
 
-			for i := len(node.tree.saveStack) - 2; i >= 0; i-- {
-				product *= node.tree.saveStack[i]
+			for i := len(saveStack) - 2; i >= 0; i-- {
+				product *= saveStack[i]
 			}
 
-			node.tree.saveStack = node.tree.saveStack[:0]
+			*saveStackPtr = saveStack[:0]
 
 			output = product
 		}
@@ -244,15 +309,22 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 				return
 			}
 
-			if len(node.tree.saveStack) < 2 {
+			var saveStackPtr *[]uint64
+			saveStackPtr, err = node.tree.saveStackPtr()
+			if err != nil {
+				return
+			}
+			saveStack := *saveStackPtr
+
+			if len(saveStack) < 2 {
 				err = ErrTreeSaveStackEmpty
 				return
 			}
 
-			dividend := node.tree.saveStack[len(node.tree.saveStack)-1]
-			divisor := node.tree.saveStack[len(node.tree.saveStack)-2]
+			dividend := saveStack[len(saveStack)-1]
+			divisor := saveStack[len(saveStack)-2]
 
-			node.tree.saveStack = node.tree.saveStack[:len(node.tree.saveStack)-2]
+			*saveStackPtr = saveStack[:len(saveStack)-2]
 
 			output = dividend / divisor
 		}
@@ -263,18 +335,25 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 				return
 			}
 
-			if len(node.tree.saveStack) == 0 {
+			var saveStackPtr *[]uint64
+			saveStackPtr, err = node.tree.saveStackPtr()
+			if err != nil {
+				return
+			}
+			saveStack := *saveStackPtr
+
+			if len(saveStack) == 0 {
 				err = ErrTreeSaveStackEmpty
 				return
 			}
 
-			division := node.tree.saveStack[len(node.tree.saveStack)-1]
+			division := saveStack[len(saveStack)-1]
 
-			for i := len(node.tree.saveStack) - 2; i >= 0; i-- {
-				division %= node.tree.saveStack[i]
+			for i := len(saveStack) - 2; i >= 0; i-- {
+				division %= saveStack[i]
 			}
 
-			node.tree.saveStack = node.tree.saveStack[:0]
+			*saveStackPtr = saveStack[:0]
 
 			output = division
 		}
@@ -320,31 +399,59 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 		output = uint64(time.Now().Unix())
 	case setNanosecondTimestampLexeme:
 		output = uint64(time.Now().UnixNano())
+	case saveStackUseIndexZeroLexeme:
+		if node.tree == nil {
+			err = ErrTreeUnfound
+			return
+		}
+
+		node.tree.saveStackIndex = 0
+	case saveStackUseIndexOneLexeme:
+		if node.tree == nil {
+			err = ErrTreeUnfound
+			return
+		}
+
+		node.tree.saveStackIndex = 1
 	case saveToStackLexeme:
 		if node.tree == nil {
 			err = ErrTreeUnfound
 			return
 		}
 
-		if len(node.tree.saveStack) == treeSaveStackMaxLen {
+		var saveStackPtr *[]uint64
+		saveStackPtr, err = node.tree.saveStackPtr()
+		if err != nil {
+			return
+		}
+		saveStack := *saveStackPtr
+
+		if len(saveStack) == treeSaveStackMaxLen {
 			err = ErrTreeSaveStackFull
 			return
 		}
 
-		node.tree.saveStack = append(node.tree.saveStack, output)
+		*saveStackPtr = append(saveStack, output)
 	case loadFromStackLexeme:
 		if node.tree == nil {
 			err = ErrTreeUnfound
 			return
 		}
 
-		if len(node.tree.saveStack) == 0 {
+		var saveStackPtr *[]uint64
+		saveStackPtr, err = node.tree.saveStackPtr()
+		if err != nil {
+			return
+		}
+		saveStack := *saveStackPtr
+
+		if len(saveStack) == 0 {
 			err = ErrTreeSaveStackEmpty
 			return
 		}
 
-		output = node.tree.saveStack[len(node.tree.saveStack)-1]
-		node.tree.saveStack = node.tree.saveStack[:len(node.tree.saveStack)-1]
+		output = saveStack[len(saveStack)-1]
+		*saveStackPtr = saveStack[:len(saveStack)-1]
 	case writeStackToFileLexeme:
 		{
 			if node.tree == nil {
@@ -352,9 +459,15 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 				return
 			}
 
+			var saveStack []uint64
+			saveStack, err = node.tree.saveStack()
+			if err != nil {
+				return
+			}
+
 			var contentBuilder bytes.Buffer
 
-			for _, value := range node.tree.saveStack {
+			for _, value := range saveStack {
 				if _, err = contentBuilder.WriteRune(rune(value)); err != nil {
 					return
 				}
@@ -382,10 +495,17 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 				return
 			}
 
-			node.tree.saveStack = node.tree.saveStack[:0]
+			var saveStackPtr *[]uint64
+			saveStackPtr, err = node.tree.saveStackPtr()
+			if err != nil {
+				return
+			}
+			saveStack := *saveStackPtr
+
+			*saveStackPtr = saveStack[:0]
 
 			for _, value := range string(content) {
-				node.tree.saveStack = append(node.tree.saveStack, uint64(value))
+				*saveStackPtr = append(saveStack, uint64(value))
 			}
 		}
 	case hashStackOneByteLexeme:
@@ -395,9 +515,15 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 				return
 			}
 
+			var saveStack []uint64
+			saveStack, err = node.tree.saveStack()
+			if err != nil {
+				return
+			}
+
 			var contentBuilder bytes.Buffer
 
-			for _, value := range node.tree.saveStack {
+			for _, value := range saveStack {
 				if _, err = contentBuilder.WriteRune(rune(value)); err != nil {
 					return
 				}
@@ -414,9 +540,15 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 				return
 			}
 
+			var saveStack []uint64
+			saveStack, err = node.tree.saveStack()
+			if err != nil {
+				return
+			}
+
 			var contentBuilder bytes.Buffer
 
-			for _, value := range node.tree.saveStack {
+			for _, value := range saveStack {
 				if _, err = contentBuilder.WriteRune(rune(value)); err != nil {
 					return
 				}
@@ -440,7 +572,16 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 			}
 		}
 	case clearStackLexeme:
-		node.tree.saveStack = node.tree.saveStack[:0]
+		{
+			var saveStackPtr *[]uint64
+			saveStackPtr, err = node.tree.saveStackPtr()
+			if err != nil {
+				return
+			}
+			saveStack := *saveStackPtr
+
+			*saveStackPtr = saveStack[:0]
+		}
 	default:
 		err = ErrLexemeUnrecognized
 	}
@@ -458,7 +599,10 @@ func produceTree(input []lexeme) (output *tree, err error) {
 
 	output = new(tree)
 	output.rootNode = rootNode
-	output.saveStack = make([]uint64, 0, treeSaveStackMaxLen)
+
+	for i := range output.saveStacks {
+		output.saveStacks[i] = make([]uint64, 0, treeSaveStackMaxLen)
+	}
 
 	rootNode.tree = output
 
@@ -533,6 +677,8 @@ func produceTree(input []lexeme) (output *tree, err error) {
 			inputNumberLexeme,
 			saveToStackLexeme,
 			loadFromStackLexeme,
+			saveStackUseIndexZeroLexeme,
+			saveStackUseIndexOneLexeme,
 			hashStackOneByteLexeme,
 			hashStackEightByteLexeme,
 			writeStackToFileLexeme,

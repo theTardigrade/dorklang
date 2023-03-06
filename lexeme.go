@@ -53,6 +53,8 @@ const (
 	clearStackLexeme
 	saveToStackLexeme
 	loadFromStackLexeme
+	saveStackUseIndexZeroLexeme
+	saveStackUseIndexOneLexeme
 	hashStackOneByteLexeme
 	hashStackEightByteLexeme
 	modifierLexeme
@@ -222,6 +224,12 @@ func produceLexemes(input []byte) (output []lexeme, err error) {
 					output[len(output)-1] = setNanosecondTimestampLexeme
 				} else {
 					l = setSecondTimestampLexeme
+				}
+			case '$':
+				if len(output) > 0 && output[len(output)-1] == saveStackUseIndexZeroLexeme {
+					output[len(output)-1] = saveStackUseIndexOneLexeme
+				} else {
+					l = saveStackUseIndexZeroLexeme
 				}
 			case ':':
 				l = saveToStackLexeme

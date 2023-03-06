@@ -257,9 +257,7 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 			}
 		}
 	case clearStackLexeme:
-		{
-			node.tree.saveStack = node.tree.saveStack[:0]
-		}
+		node.tree.saveStack = node.tree.saveStack[:0]
 	default:
 		err = ErrLexemeUnrecognized
 	}

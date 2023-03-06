@@ -64,6 +64,9 @@ func (node *ParentTreeNode) Value(input uint8) (output uint8, err error) {
 				output -= localOutput
 			}
 		}
+	case StartCommentSectionLexeme:
+	default:
+		err = ErrLexemeUnrecognized
 	}
 
 	return
@@ -140,7 +143,8 @@ func produceTree(input []Lexeme) (output *Tree, err error) {
 		switch l {
 		case StartAdditionSectionLexeme,
 			StartSubtractionSectionLexeme,
-			StartJumpSectionLexeme:
+			StartJumpSectionLexeme,
+			StartCommentSectionLexeme:
 			{
 				nextNode := &ParentTreeNode{
 					Lexeme: l,
@@ -159,7 +163,8 @@ func produceTree(input []Lexeme) (output *Tree, err error) {
 			}
 		case EndAdditionSectionLexeme,
 			EndSubtractionSectionLexeme,
-			EndJumpSectionLexeme:
+			EndJumpSectionLexeme,
+			EndCommentSectionLexeme:
 			{
 				if len(parentNodeStack) == 0 {
 					err = ErrTreeParentNodeUnfound

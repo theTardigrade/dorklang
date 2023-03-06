@@ -30,8 +30,8 @@ Below is an overview of all the commands that can be used in **dorklang** source
 | `%//` | Pops all of the values from the current stack, divides each of them from the others and sets the current value to the result. | 
 | `*` | Multiplies the current value by `2`. |
 | `**` | Multiplies the current value by `8`. |
-| `%*` | Pops the `2` topmost values from the current stack, multiplies one from the other and sets the current value to the result. | 
-| `%**` | Pops all of the values from the current stack, multiplies each of them from the others and sets the current value to the result. | 
+| `%*` | Pops the `2` topmost values from the current stack, multiplies one with the other and sets the current value to the result. | 
+| `%**` | Pops all of the values from the current stack, multiplies each of them with the others and sets the current value to the result. | 
 | `^` | Squares the current value (i.e. multiplies it by itself). |
 | `^^` | Cubes the current value (i.e. multiplies it by itself twice). |
 | `!` | Prints the current value to the screen as a Unicode/ASCII character. |

@@ -68,14 +68,14 @@ func (node *TerminalTreeNode) Value(input uint8) (output uint8, err error) {
 		output--
 	case DecrementEightLexeme:
 		output -= 8
-	case DoubleLexeme:
+	case MultiplyTwoLexeme:
 		output *= 2
-	case TripleLexeme:
-		output *= 3
-	case HalfLexeme:
+	case MultiplyEightLexeme:
+		output *= 8
+	case DivideTwoLexeme:
 		output /= 2
-	case ThirdLexeme:
-		output /= 3
+	case DivideEightLexeme:
+		output /= 8
 	case SquareLexeme:
 		output *= output
 	case CubeLexeme:
@@ -139,10 +139,10 @@ func produceTree(input []Lexeme) (output *Tree, err error) {
 			IncrementEightLexeme,
 			DecrementOneLexeme,
 			DecrementEightLexeme,
-			DoubleLexeme,
-			TripleLexeme,
-			HalfLexeme,
-			ThirdLexeme,
+			MultiplyTwoLexeme,
+			MultiplyEightLexeme,
+			DivideTwoLexeme,
+			DivideEightLexeme,
 			SquareLexeme,
 			CubeLexeme,
 			MinLexeme,

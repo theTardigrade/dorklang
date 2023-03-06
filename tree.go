@@ -269,7 +269,7 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 
 			output = multiplier * multiplicand
 		}
-	case multipleStackWholeLexeme:
+	case multiplyStackWholeLexeme:
 		{
 			if node.tree == nil {
 				err = ErrTreeUnfound
@@ -660,7 +660,7 @@ func produceTree(input []lexeme) (output *tree, err error) {
 			multiplyTwoLexeme,
 			multiplyEightLexeme,
 			multiplyStackPairLexeme,
-			multipleStackWholeLexeme,
+			multiplyStackWholeLexeme,
 			divideTwoLexeme,
 			divideEightLexeme,
 			divideStackPairLexeme,

@@ -125,14 +125,22 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 		}
 	case setZeroLexeme:
 		output = 0
-	case setOneNybbleLexeme:
-		output = 16
-	case setEightNybbleLexeme:
-		output = 16 * 8 // 128
 	case setOneByteLexeme:
-		output = 256
+		output = 1 << 3 // 8
 	case setEightByteLexeme:
-		output = 256 * 8 // 2_048
+		output = 1 << 6 // 64
+	case setOneKibibyteLexeme:
+		output = 1 << 13 // 8_192
+	case setEightKibibyteLexeme:
+		output = 1 << 16 // 65_536
+	case setOneMebibyteLexeme:
+		output = 1 << 23 // 8_388_608
+	case setEightMebibyteLexeme:
+		output = 1 << 26 // 67_108_864
+	case setOneGibibyteLexeme:
+		output = 1 << 33 // 8_589_934_592
+	case setEightGibibyteLexeme:
+		output = 1 << 36 // 68_719_476_736
 	case setSecondTimestampLexeme:
 		output = uint64(time.Now().Unix())
 	case setNanosecondTimestampLexeme:
@@ -324,10 +332,14 @@ func produceTree(input []lexeme) (output *tree, err error) {
 			squareLexeme,
 			cubeLexeme,
 			setZeroLexeme,
-			setOneNybbleLexeme,
-			setEightNybbleLexeme,
 			setOneByteLexeme,
 			setEightByteLexeme,
+			setOneKibibyteLexeme,
+			setEightKibibyteLexeme,
+			setOneMebibyteLexeme,
+			setEightMebibyteLexeme,
+			setOneGibibyteLexeme,
+			setEightGibibyteLexeme,
 			setSecondTimestampLexeme,
 			setNanosecondTimestampLexeme,
 			printCharacterLexeme,

@@ -23,10 +23,14 @@ const (
 	squareLexeme
 	cubeLexeme
 	setZeroLexeme
-	setOneNybbleLexeme
-	setEightNybbleLexeme
 	setOneByteLexeme
 	setEightByteLexeme
+	setOneKibibyteLexeme
+	setEightKibibyteLexeme
+	setOneMebibyteLexeme
+	setEightMebibyteLexeme
+	setOneGibibyteLexeme
+	setEightGibibyteLexeme
 	setSecondTimestampLexeme
 	setNanosecondTimestampLexeme
 	printCharacterLexeme
@@ -41,6 +45,7 @@ const (
 	loadFromStackLexeme
 	hashStackOneByteLexeme
 	hashStackEightByteLexeme
+	modifierLexeme
 	separatorLexeme
 )
 
@@ -107,16 +112,44 @@ func produceLexemes(input []byte) (output []lexeme, err error) {
 			case '~':
 				l = setZeroLexeme
 			case '\'':
-				if len(output) > 0 && output[len(output)-1] == setOneNybbleLexeme {
-					output[len(output)-1] = setEightNybbleLexeme
-				} else {
-					l = setOneNybbleLexeme
+				{
+					outputLen := len(output)
+					lastOutput := invalidLexeme
+
+					if outputLen > 0 {
+						lastOutput = output[outputLen-1]
+					}
+
+					switch lastOutput {
+					case setOneMebibyteLexeme:
+						output[outputLen-1] = setEightMebibyteLexeme
+					case modifierLexeme:
+						output[outputLen-1] = setOneMebibyteLexeme
+					case setOneByteLexeme:
+						output[outputLen-1] = setEightByteLexeme
+					default:
+						l = setOneByteLexeme
+					}
 				}
 			case '"':
-				if len(output) > 0 && output[len(output)-1] == setOneByteLexeme {
-					output[len(output)-1] = setEightByteLexeme
-				} else {
-					l = setOneByteLexeme
+				{
+					outputLen := len(output)
+					lastOutput := invalidLexeme
+
+					if outputLen > 0 {
+						lastOutput = output[outputLen-1]
+					}
+
+					switch lastOutput {
+					case setOneGibibyteLexeme:
+						output[outputLen-1] = setEightGibibyteLexeme
+					case modifierLexeme:
+						output[outputLen-1] = setOneGibibyteLexeme
+					case setOneKibibyteLexeme:
+						output[outputLen-1] = setEightKibibyteLexeme
+					default:
+						l = setOneKibibyteLexeme
+					}
 				}
 			case '@':
 				if len(output) > 0 && output[len(output)-1] == setSecondTimestampLexeme {
@@ -193,6 +226,8 @@ func produceLexemes(input []byte) (output []lexeme, err error) {
 				if len(output) == 0 || output[len(output)-1] != separatorLexeme {
 					l = separatorLexeme
 				}
+			case '%':
+				l = modifierLexeme
 			default:
 				err = ErrLexemeUnrecognized
 				return

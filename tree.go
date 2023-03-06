@@ -5,9 +5,13 @@ import (
 	"time"
 )
 
+const (
+	treeSaveStackMaxLen = 256 * 256 // 65_536
+)
+
 type tree struct {
-	rootNode   *parentTreeNode
-	savedValue uint64
+	rootNode  *parentTreeNode
+	saveStack []uint64
 }
 
 type treeNode interface {
@@ -122,7 +126,7 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 	case setOneByteLexeme:
 		output = 256
 	case setEightByteLexeme:
-		output = 256 * 8 // 2048
+		output = 256 * 8 // 2_048
 	case setSecondTimestampLexeme:
 		output = uint64(time.Now().Unix())
 	case setNanosecondTimestampLexeme:
@@ -133,14 +137,25 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 			return
 		}
 
-		node.tree.savedValue = output
+		if len(node.tree.saveStack) == treeSaveStackMaxLen {
+			err = ErrTreeSaveStackFull
+			return
+		}
+
+		node.tree.saveStack = append(node.tree.saveStack, output)
 	case loadLexeme:
 		if node.tree == nil {
 			err = ErrTreeUnfound
 			return
 		}
 
-		output = node.tree.savedValue
+		if len(node.tree.saveStack) == 0 {
+			err = ErrTreeSaveStackEmpty
+			return
+		}
+
+		output = node.tree.saveStack[len(node.tree.saveStack)-1]
+		node.tree.saveStack = node.tree.saveStack[:len(node.tree.saveStack)-1]
 	default:
 		err = ErrLexemeUnrecognized
 	}
@@ -158,6 +173,8 @@ func produceTree(input []lexeme) (output *tree, err error) {
 
 	output = new(tree)
 	output.rootNode = rootNode
+	output.saveStack = make([]uint64, 0, treeSaveStackMaxLen)
+
 	rootNode.tree = output
 
 	for _, l := range input {

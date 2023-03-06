@@ -190,6 +190,28 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 
 			output = dividend / divisor
 		}
+	case sumStackLexeme:
+		{
+			if node.tree == nil {
+				err = ErrTreeUnfound
+				return
+			}
+
+			if len(node.tree.saveStack) == 0 {
+				err = ErrTreeSaveStackEmpty
+				return
+			}
+
+			var sum uint64
+
+			for i := len(node.tree.saveStack) - 1; i >= 0; i-- {
+				sum += node.tree.saveStack[i]
+			}
+
+			node.tree.saveStack = node.tree.saveStack[:0]
+
+			output = sum
+		}
 	case squareLexeme:
 		output *= output
 	case cubeLexeme:
@@ -422,6 +444,7 @@ func produceTree(input []lexeme) (output *tree, err error) {
 			divideTwoLexeme,
 			divideEightLexeme,
 			divideStackPairLexeme,
+			sumStackLexeme,
 			squareLexeme,
 			cubeLexeme,
 			setZeroLexeme,

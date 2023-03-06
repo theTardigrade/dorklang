@@ -26,6 +26,7 @@ const (
 	divideTwoLexeme
 	divideEightLexeme
 	divideStackPairLexeme
+	sumStackLexeme
 	squareLexeme
 	cubeLexeme
 	setZeroLexeme
@@ -225,6 +226,8 @@ func produceLexemes(input []byte) (output []lexeme, err error) {
 				l = writeStackToFileLexeme
 			case ',':
 				l = readStackFromFileLexeme
+			case '$':
+				l = sumStackLexeme
 			case '|':
 				if len(output) > 0 && output[len(output)-1] == deleteFileLexeme {
 					output[len(output)-1] = clearStackLexeme

@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	treeSaveStackMaxLen = 256 * 256 * 256 // 16_777_216
+	treeSaveStackMaxLen = 1 << 24 // 16_777_216
 )
 
 type tree struct {

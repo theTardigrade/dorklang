@@ -36,6 +36,7 @@ const (
 	writeToFileLexeme
 	loadFromFileLexeme
 	deleteFileLexeme
+	clearStackLexeme
 	saveToStackLexeme
 	loadFromStackLexeme
 	hashStackOneByteLexeme
@@ -138,7 +139,11 @@ func produceLexemes(input []byte) (output []lexeme, err error) {
 			case ',':
 				l = loadFromFileLexeme
 			case '|':
-				l = deleteFileLexeme
+				if len(output) > 0 && output[len(output)-1] == deleteFileLexeme {
+					output[len(output)-1] = clearStackLexeme
+				} else {
+					l = deleteFileLexeme
+				}
 			case '(':
 				l = startAdditionSectionLexeme
 				sectionStack = append(sectionStack, l)

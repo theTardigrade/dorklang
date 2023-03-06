@@ -256,6 +256,10 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 				return
 			}
 		}
+	case clearStackLexeme:
+		{
+			node.tree.saveStack = node.tree.saveStack[:0]
+		}
 	default:
 		err = ErrLexemeUnrecognized
 	}
@@ -338,7 +342,8 @@ func produceTree(input []lexeme) (output *tree, err error) {
 			hashStackEightByteLexeme,
 			writeToFileLexeme,
 			loadFromFileLexeme,
-			deleteFileLexeme:
+			deleteFileLexeme,
+			clearStackLexeme:
 			{
 				nextNode := &terminalTreeNode{
 					lexeme: l,

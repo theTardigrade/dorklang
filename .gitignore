@@ -1,2 +1,3 @@
 *.exe
 *.eso
+!/examples/*.eso

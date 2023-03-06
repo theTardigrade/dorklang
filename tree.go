@@ -91,7 +91,7 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 		output++
 	case addEightLexeme:
 		output += 8
-	case stackAddLexeme:
+	case addStackPairLexeme:
 		{
 			if node.tree == nil {
 				err = ErrTreeUnfound
@@ -114,7 +114,7 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 		output--
 	case subtractEightLexeme:
 		output -= 8
-	case stackSubtractLexeme:
+	case subtractStackPairLexeme:
 		{
 			if node.tree == nil {
 				err = ErrTreeUnfound
@@ -137,7 +137,7 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 		output *= 2
 	case multiplyEightLexeme:
 		output *= 8
-	case stackMultiplyLexeme:
+	case multiplyStackPairLexeme:
 		{
 			if node.tree == nil {
 				err = ErrTreeUnfound
@@ -160,7 +160,7 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 		output /= 2
 	case divideEightLexeme:
 		output /= 8
-	case stackDivideLexeme:
+	case divideStackPairLexeme:
 		{
 			if node.tree == nil {
 				err = ErrTreeUnfound
@@ -399,16 +399,16 @@ func produceTree(input []lexeme) (output *tree, err error) {
 			}
 		case addOneLexeme,
 			addEightLexeme,
-			stackAddLexeme,
+			addStackPairLexeme,
 			subtractOneLexeme,
 			subtractEightLexeme,
-			stackSubtractLexeme,
+			subtractStackPairLexeme,
 			multiplyTwoLexeme,
 			multiplyEightLexeme,
-			stackMultiplyLexeme,
+			multiplyStackPairLexeme,
 			divideTwoLexeme,
 			divideEightLexeme,
-			stackDivideLexeme,
+			divideStackPairLexeme,
 			squareLexeme,
 			cubeLexeme,
 			setZeroLexeme,

@@ -14,16 +14,16 @@ const (
 	endCommentSectionLexeme
 	addOneLexeme
 	addEightLexeme
-	stackAddLexeme
+	addStackPairLexeme
 	subtractOneLexeme
 	subtractEightLexeme
-	stackSubtractLexeme
+	subtractStackPairLexeme
 	multiplyTwoLexeme
 	multiplyEightLexeme
-	stackMultiplyLexeme
+	multiplyStackPairLexeme
 	divideTwoLexeme
 	divideEightLexeme
-	stackDivideLexeme
+	divideStackPairLexeme
 	squareLexeme
 	cubeLexeme
 	setZeroLexeme
@@ -82,7 +82,7 @@ func produceLexemes(input []byte) (output []lexeme, err error) {
 
 					switch lastOutput {
 					case modifierLexeme:
-						output[outputLen-1] = stackAddLexeme
+						output[outputLen-1] = addStackPairLexeme
 					case addOneLexeme:
 						output[outputLen-1] = addEightLexeme
 					default:
@@ -100,7 +100,7 @@ func produceLexemes(input []byte) (output []lexeme, err error) {
 
 					switch lastOutput {
 					case modifierLexeme:
-						output[outputLen-1] = stackSubtractLexeme
+						output[outputLen-1] = subtractStackPairLexeme
 					case subtractOneLexeme:
 						output[outputLen-1] = subtractEightLexeme
 					default:
@@ -118,7 +118,7 @@ func produceLexemes(input []byte) (output []lexeme, err error) {
 
 					switch lastOutput {
 					case modifierLexeme:
-						output[outputLen-1] = stackMultiplyLexeme
+						output[outputLen-1] = multiplyStackPairLexeme
 					case multiplyTwoLexeme:
 						output[outputLen-1] = multiplyEightLexeme
 					default:
@@ -136,7 +136,7 @@ func produceLexemes(input []byte) (output []lexeme, err error) {
 
 					switch lastOutput {
 					case modifierLexeme:
-						output[outputLen-1] = stackDivideLexeme
+						output[outputLen-1] = divideStackPairLexeme
 					case divideTwoLexeme:
 						output[outputLen-1] = divideEightLexeme
 					default:

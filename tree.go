@@ -184,6 +184,27 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 				return
 			}
 		}
+	case loadFromFileLexeme:
+		{
+			if node.tree == nil {
+				err = ErrTreeUnfound
+				return
+			}
+
+			var content []byte
+
+			fileName := strconv.FormatUint(output, 10) + treeSaveFileExtension
+			content, err = os.ReadFile(fileName)
+			if err != nil {
+				return
+			}
+
+			node.tree.saveStack = node.tree.saveStack[:0]
+
+			for _, value := range string(content) {
+				node.tree.saveStack = append(node.tree.saveStack, uint64(value))
+			}
+		}
 	case hashStackOneByteLexeme:
 		{
 			if node.tree == nil {
@@ -221,27 +242,6 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 			content := contentBuilder.Bytes()
 
 			output = hash.Uint64(content)
-		}
-	case loadFromFileLexeme:
-		{
-			if node.tree == nil {
-				err = ErrTreeUnfound
-				return
-			}
-
-			var content []byte
-
-			fileName := strconv.FormatUint(output, 10) + treeSaveFileExtension
-			content, err = os.ReadFile(fileName)
-			if err != nil {
-				return
-			}
-
-			node.tree.saveStack = node.tree.saveStack[:0]
-
-			for _, value := range string(content) {
-				node.tree.saveStack = append(node.tree.saveStack, uint64(value))
-			}
 		}
 	case deleteFileLexeme:
 		{

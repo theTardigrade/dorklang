@@ -1,3 +1,4 @@
 *.exe
 *.dork
+*.dork.txt
 !/examples/*.dork

@@ -15,7 +15,8 @@ const (
 	DoubleLexeme
 	HalfLexeme
 	SquareLexeme
-	ZeroLexeme
+	MinLexeme
+	MaxLexeme
 	PrintCharacterLexeme
 	PrintNumberLexeme
 	SeparatorLexeme
@@ -51,8 +52,10 @@ func produceLexemes(input []byte) (output []Lexeme, err error) {
 				} else {
 					l = PrintCharacterLexeme
 				}
-			case '_':
-				l = ZeroLexeme
+			case '\'':
+				l = MinLexeme
+			case '"':
+				l = MaxLexeme
 			case '(':
 				l = StartAdditionSectionLexeme
 				sectionStack = append(sectionStack, l)

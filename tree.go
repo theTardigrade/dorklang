@@ -60,10 +60,14 @@ func (node *TerminalTreeNode) Value(input uint8) (output uint8, err error) {
 	output = input
 
 	switch node.Lexeme {
-	case IncrementLexexme:
+	case IncrementOneLexeme:
 		output++
-	case DecrementLexeme:
-		output -= 1
+	case IncrementEightLexeme:
+		output += 8
+	case DecrementOneLexeme:
+		output--
+	case DecrementEightLexeme:
+		output -= 8
 	case DoubleLexeme:
 		output *= 2
 	case TripleLexeme:
@@ -131,11 +135,16 @@ func produceTree(input []Lexeme) (output *Tree, err error) {
 
 				parentNodeStack = parentNodeStack[:len(parentNodeStack)-1]
 			}
-		case IncrementLexexme,
-			DecrementLexeme,
+		case IncrementOneLexeme,
+			IncrementEightLexeme,
+			DecrementOneLexeme,
+			DecrementEightLexeme,
 			DoubleLexeme,
+			TripleLexeme,
 			HalfLexeme,
+			ThirdLexeme,
 			SquareLexeme,
+			CubeLexeme,
 			MinLexeme,
 			MaxLexeme,
 			PrintCharacterLexeme,

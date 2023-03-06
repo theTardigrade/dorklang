@@ -10,8 +10,10 @@ const (
 	EndAdditionSectionLexeme
 	StartSubtractionSectionLexeme
 	EndSubtractionSectionLexeme
-	IncrementLexexme
-	DecrementLexeme
+	IncrementOneLexeme
+	IncrementEightLexeme
+	DecrementOneLexeme
+	DecrementEightLexeme
 	DoubleLexeme
 	TripleLexeme
 	HalfLexeme
@@ -40,9 +42,17 @@ func produceLexemes(input []byte) (output []Lexeme, err error) {
 		} else {
 			switch r {
 			case '+':
-				l = IncrementLexexme
+				if len(output) > 0 && output[len(output)-1] == IncrementOneLexeme {
+					output[len(output)-1] = IncrementEightLexeme
+				} else {
+					l = IncrementOneLexeme
+				}
 			case '-':
-				l = DecrementLexeme
+				if len(output) > 0 && output[len(output)-1] == DecrementOneLexeme {
+					output[len(output)-1] = DecrementEightLexeme
+				} else {
+					l = DecrementOneLexeme
+				}
 			case '*':
 				if len(output) > 0 && output[len(output)-1] == DoubleLexeme {
 					output[len(output)-1] = TripleLexeme

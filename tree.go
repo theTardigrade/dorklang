@@ -46,9 +46,20 @@ func (node *parentTreeNode) value(input uint64) (output uint64, err error) {
 	output = input
 
 	switch node.lexeme {
-	case startJumpSectionLexeme:
+	case startJumpIfPositiveSectionLexeme:
 		{
 			for output > 0 {
+				for _, node := range node.childNodes {
+					output, err = node.value(output)
+					if err != nil {
+						return
+					}
+				}
+			}
+		}
+	case startJumpIfZeroSectionLexeme:
+		{
+			for output == 0 {
 				for _, node := range node.childNodes {
 					output, err = node.value(output)
 					if err != nil {
@@ -367,7 +378,8 @@ func produceTree(input []lexeme) (output *tree, err error) {
 		switch l {
 		case startAdditionSectionLexeme,
 			startSubtractionSectionLexeme,
-			startJumpSectionLexeme,
+			startJumpIfPositiveSectionLexeme,
+			startJumpIfZeroSectionLexeme,
 			startCommentSectionLexeme:
 			{
 				nextNode := &parentTreeNode{
@@ -387,7 +399,8 @@ func produceTree(input []lexeme) (output *tree, err error) {
 			}
 		case endAdditionSectionLexeme,
 			endSubtractionSectionLexeme,
-			endJumpSectionLexeme,
+			endJumpIfPositiveSectionLexeme,
+			endJumpIfZeroSectionLexeme,
 			endCommentSectionLexeme:
 			{
 				if len(parentNodeStack) == 0 {

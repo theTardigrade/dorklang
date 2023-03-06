@@ -8,8 +8,10 @@ const (
 	endAdditionSectionLexeme
 	startSubtractionSectionLexeme
 	endSubtractionSectionLexeme
-	startJumpSectionLexeme
-	endJumpSectionLexeme
+	startJumpIfPositiveSectionLexeme
+	endJumpIfPositiveSectionLexeme
+	startJumpIfZeroSectionLexeme
+	endJumpIfZeroSectionLexeme
 	startCommentSectionLexeme
 	endCommentSectionLexeme
 	addOneLexeme
@@ -57,7 +59,7 @@ func produceLexemes(input []byte) (output []lexeme, err error) {
 	output = make([]lexeme, 0, len(input))
 	sectionStack := make([]lexeme, 0, len(input)/2)
 
-	for _, r := range input {
+	for i, r := range input {
 		l := invalidLexeme
 
 		if len(sectionStack) > 0 && sectionStack[len(sectionStack)-1] == startCommentSectionLexeme {
@@ -104,7 +106,7 @@ func produceLexemes(input []byte) (output []lexeme, err error) {
 					case subtractOneLexeme:
 						output[outputLen-1] = subtractEightLexeme
 					default:
-						l = subtractEightLexeme
+						l = subtractOneLexeme
 					}
 				}
 			case '*':
@@ -239,7 +241,7 @@ func produceLexemes(input []byte) (output []lexeme, err error) {
 					return
 				}
 				if sectionStack[len(sectionStack)-1] != startAdditionSectionLexeme {
-					err = ErrOverlapSectionCharacters
+					err = ErrLexemeSectionStackNoMatch
 					return
 				}
 				sectionStack = sectionStack[:len(sectionStack)-1]
@@ -253,24 +255,66 @@ func produceLexemes(input []byte) (output []lexeme, err error) {
 					return
 				}
 				if sectionStack[len(sectionStack)-1] != startSubtractionSectionLexeme {
-					err = ErrOverlapSectionCharacters
+					err = ErrLexemeSectionStackNoMatch
 					return
 				}
 				sectionStack = sectionStack[:len(sectionStack)-1]
 			case '<':
-				l = startJumpSectionLexeme
-				sectionStack = append(sectionStack, l)
+				if len(output) > 0 && output[len(output)-1] == startJumpIfPositiveSectionLexeme {
+					if len(sectionStack) == 0 {
+						err = ErrLexemeSectionStackEmpty
+						return
+					}
+					if sectionStack[len(sectionStack)-1] != startJumpIfPositiveSectionLexeme {
+						err = ErrLexemeSectionStackNoMatch
+						return
+					}
+					sectionStack[len(sectionStack)-1] = startJumpIfZeroSectionLexeme
+					output[len(output)-1] = startJumpIfZeroSectionLexeme
+				} else {
+					l = startJumpIfPositiveSectionLexeme
+					sectionStack = append(sectionStack, l)
+				}
 			case '>':
-				l = endJumpSectionLexeme
-				if len(sectionStack) == 0 {
-					err = ErrNoMatchSectionCharacters
-					return
+				{
+					var localLexeme lexeme
+
+					if len(output) > 0 && output[len(output)-1] == endJumpIfPositiveSectionLexeme {
+						localLexeme = endJumpIfZeroSectionLexeme
+						output[len(output)-1] = localLexeme
+					} else {
+						localLexeme = endJumpIfPositiveSectionLexeme
+						l = localLexeme
+					}
+
+					if len(sectionStack) == 0 {
+						err = ErrNoMatchSectionCharacters
+						return
+					}
+
+					switch localLexeme {
+					case endJumpIfPositiveSectionLexeme:
+						if i+1 < len(input) && input[i+1] == r {
+							localLexeme = invalidLexeme
+						} else {
+							localLexeme = startJumpIfPositiveSectionLexeme
+						}
+					case endJumpIfZeroSectionLexeme:
+						localLexeme = startJumpIfZeroSectionLexeme
+					default:
+						err = ErrLexemeSectionStackNoMatch
+						return
+					}
+
+					if localLexeme != invalidLexeme {
+						if sectionStack[len(sectionStack)-1] != localLexeme {
+							err = ErrLexemeSectionStackNoMatch
+							return
+						}
+
+						sectionStack = sectionStack[:len(sectionStack)-1]
+					}
 				}
-				if sectionStack[len(sectionStack)-1] != startJumpSectionLexeme {
-					err = ErrOverlapSectionCharacters
-					return
-				}
-				sectionStack = sectionStack[:len(sectionStack)-1]
 			case '{':
 				l = startCommentSectionLexeme
 				sectionStack = append(sectionStack, l)

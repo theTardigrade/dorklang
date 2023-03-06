@@ -114,10 +114,14 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 		}
 	case setZeroLexeme:
 		output = 0
-	case setHalfByteLexeme:
-		output = 128
-	case setByteLexeme:
+	case setOneNybbleLexeme:
+		output = 16
+	case setEightNybbleLexeme:
+		output = 16 * 8 // 128
+	case setOneByteLexeme:
 		output = 256
+	case setEightByteLexeme:
+		output = 256 * 8 // 2048
 	case saveLexeme:
 		if node.tree == nil {
 			err = ErrTreeUnfound
@@ -196,8 +200,9 @@ func produceTree(input []lexeme) (output *tree, err error) {
 			squareLexeme,
 			cubeLexeme,
 			setZeroLexeme,
-			setHalfByteLexeme,
-			setByteLexeme,
+			setOneNybbleLexeme,
+			setEightNybbleLexeme,
+			setOneByteLexeme,
 			printCharacterLexeme,
 			printNumberLexeme,
 			inputCharacterLexeme,

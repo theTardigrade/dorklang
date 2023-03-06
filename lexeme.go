@@ -23,8 +23,10 @@ const (
 	squareLexeme
 	cubeLexeme
 	setZeroLexeme
-	setHalfByteLexeme
-	setByteLexeme
+	setOneNybbleLexeme
+	setEightNybbleLexeme
+	setOneByteLexeme
+	setEightByteLexeme
 	printCharacterLexeme
 	printNumberLexeme
 	inputCharacterLexeme
@@ -94,12 +96,20 @@ func produceLexemes(input []byte) (output []lexeme, err error) {
 				} else {
 					l = inputCharacterLexeme
 				}
-			case '\'':
-				l = setZeroLexeme
 			case '~':
-				l = setHalfByteLexeme
+				l = setZeroLexeme
+			case '\'':
+				if len(output) > 0 && output[len(output)-1] == setOneNybbleLexeme {
+					output[len(output)-1] = setEightNybbleLexeme
+				} else {
+					l = setOneNybbleLexeme
+				}
 			case '"':
-				l = setByteLexeme
+				if len(output) > 0 && output[len(output)-1] == setOneByteLexeme {
+					output[len(output)-1] = setEightByteLexeme
+				} else {
+					l = setOneByteLexeme
+				}
 			case ':':
 				l = saveLexeme
 			case ';':

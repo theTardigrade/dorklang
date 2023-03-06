@@ -18,19 +18,19 @@ Below is an overview of all the commands that can be used in **dorklang** source
 | :--------: | ------- |
 | `+` | Adds `1` to the current value. |
 | `++` | Adds `8` to the current value. |
-| `%+` | Pops the `2` topmost values from the current stack, adds one to the other and sets the current value to the result. | 
+| `%+` | Pops the two topmost values from the current stack, adds one to the other and sets the current value to the result. | 
 | `%++` | Pops all of the values from the current stack, adds each of them to the others and sets the current value to the result. | 
 | `-` | Subtracts `1` from the current value. |
 | `--` | Subtracts `8` from the current value. |
-| `%-` | Pops the `2` topmost values from the current stack, subtracts one from the other and sets the current value to the result. | 
+| `%-` | Pops the two topmost values from the current stack, subtracts one from the other and sets the current value to the result. | 
 | `%--` | Pops all of the values from the current stack, subtracts each of them from the others and sets the current value to the result. | 
 | `/` | Divides the current value by `2`. |
 | `//` | Divides the current value by `8`. |
-| `%/` | Pops the `2` topmost values from the current stack, divides one from the other and sets the current value to the result. | 
+| `%/` | Pops the two topmost values from the current stack, divides one from the other and sets the current value to the result. | 
 | `%//` | Pops all of the values from the current stack, divides each of them from the others and sets the current value to the result. | 
 | `*` | Multiplies the current value by `2`. |
 | `**` | Multiplies the current value by `8`. |
-| `%*` | Pops the `2` topmost values from the current stack, multiplies one with the other and sets the current value to the result. | 
+| `%*` | Pops the two topmost values from the current stack, multiplies one with the other and sets the current value to the result. | 
 | `%**` | Pops all of the values from the current stack, multiplies each of them with the others and sets the current value to the result. | 
 | `^` | Squares the current value (i.e. multiplies it by itself). |
 | `^^` | Cubes the current value (i.e. multiplies it by itself twice). |
@@ -39,14 +39,14 @@ Below is an overview of all the commands that can be used in **dorklang** source
 | `?` | Waits for a Unicode/ASCII character to be given as input, then sets the current value to its numerical value. |
 | `??` | Waits for a decimal number to be given as input, then sets the current value to it. |
 | `~` | Sets the current value to `0`. |
-| `'` | Sets the current value to the size of `1` byte (i.e. `8`). |
-| `''` | Sets the current value to the size of `8` bytes (i.e. `64`). |
-| `"` | Sets the current value to the size of `1` kibibyte (i.e. `8_192`). |
-| `""` | Sets the current value to the size of `8` kibibytes (i.e. `65_536`). |
-| `%'` | Sets the current value to the size of `1` mebibyte (i.e. `8_388_608`). |
-| `%''` | Sets the current value to the size of `8` mebibytes (i.e. `67_108_864`). |
-| `%"` | Sets the current value to the size of `1` gibibyte (i.e. `8_589_934_592`). |
-| `%""` | Sets the current value to the size of `8` gibibytes (i.e. `68_719_476_736`). |
+| `'` | Sets the current value to the size of a byte (i.e. `8`). |
+| `''` | Sets the current value to the size of eight bytes (i.e. `64`). |
+| `"` | Sets the current value to the size of a kibibyte (i.e. `8_192`). |
+| `""` | Sets the current value to the size of eight kibibytes (i.e. `65_536`). |
+| `%'` | Sets the current value to the size of a mebibyte (i.e. `8_388_608`). |
+| `%''` | Sets the current value to the size of eight mebibytes (i.e. `67_108_864`). |
+| `%"` | Sets the current value to the size of a gibibyte (i.e. `8_589_934_592`). |
+| `%""` | Sets the current value to the size of eight gibibytes (i.e. `68_719_476_736`). |
 | `@` | Sets the current value to the number of seconds in a UNIX-timestamp representation of the current time. |
 | `@@` | Sets the current value to the number of nanoseconds in a UNIX-timestamp representation of the current time. |
 | `$` | Uses the first of a pair of stacks when calling further commands that make use of a stack. |

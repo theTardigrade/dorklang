@@ -580,6 +580,11 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 		}
 	case clearStackLexeme:
 		{
+			if node.tree == nil {
+				err = ErrTreeUnfound
+				return
+			}
+
 			var saveStackPtr *[]uint64
 			saveStackPtr, err = node.tree.saveStackPtr()
 			if err != nil {
@@ -588,6 +593,19 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 			saveStack := *saveStackPtr
 
 			*saveStackPtr = saveStack[:0]
+		}
+	case resetStateLexeme:
+		{
+			if node.tree == nil {
+				err = ErrTreeUnfound
+				return
+			}
+
+			for i := len(node.tree.saveStacks) - 1; i >= 0; i-- {
+				node.tree.saveStacks[i] = node.tree.saveStacks[i][:0]
+			}
+
+			output = 0
 		}
 	default:
 		err = ErrLexemeUnrecognized
@@ -691,7 +709,8 @@ func produceTree(input []lexeme) (output *tree, err error) {
 			writeStackToFileLexeme,
 			readStackFromFileLexeme,
 			deleteFileLexeme,
-			clearStackLexeme:
+			clearStackLexeme,
+			resetStateLexeme:
 			{
 				nextNode := &terminalTreeNode{
 					lexeme: l,

@@ -59,6 +59,7 @@ Below is an overview of all the commands that can be used in **dorklang** source
 | `,` | Loads the current stack from a file, using the Unicode/ASCII representation of each value on the stack. The filename is based on the current value. |
 | `\|` | Deletes a file representing a saved stack. The filename is based on the current value. |
 | `\|\|` | Clears the current stack. |
+| `%\|` | Resets all state (i.e. clears both of the stacks and sets the current value to `0`). |
 | ` ` | Whitespace can be used to separate two single-character commands that could otherwise be interpreted as a multi-character command. |
 | `(` ... `)` | Creates a new context with a new current value of zero, in which any commands between the brackets are called, then adds the current value of the created context to the current value of the surrounding context. |
 | `[` ... `]` | Creates a new context with a new current value of zero, in which any commands between the brackets are called, then subtracts the current value of the created context from the current value of the surrounding context. |

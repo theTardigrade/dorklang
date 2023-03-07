@@ -51,6 +51,7 @@ const (
 	readStackFromFileLexeme
 	deleteFileLexeme
 	clearStackLexeme
+	resetStateLexeme
 	saveToStackLexeme
 	loadFromStackLexeme
 	saveStackUseIndexZeroLexeme
@@ -246,10 +247,22 @@ func produceLexemes(input []byte) (output []lexeme, err error) {
 			case ',':
 				l = readStackFromFileLexeme
 			case '|':
-				if len(output) > 0 && output[len(output)-1] == deleteFileLexeme {
-					output[len(output)-1] = clearStackLexeme
-				} else {
-					l = deleteFileLexeme
+				{
+					outputLen := len(output)
+					lastOutput := invalidLexeme
+
+					if outputLen > 0 {
+						lastOutput = output[outputLen-1]
+					}
+
+					switch lastOutput {
+					case modifierLexeme:
+						output[outputLen-1] = resetStateLexeme
+					case deleteFileLexeme:
+						output[outputLen-1] = clearStackLexeme
+					default:
+						l = deleteFileLexeme
+					}
 				}
 			case '(':
 				l = startAdditionSectionLexeme

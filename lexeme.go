@@ -70,6 +70,7 @@ const (
 	saveStackUseIndexOneLexeme
 	hashStackOneByteLexeme
 	hashStackEightByteLexeme
+	invertLexeme
 	modifierLexeme
 	separatorLexeme
 )
@@ -196,6 +197,8 @@ func (lexeme lexeme) String() string {
 		builder.WriteString("HASH-STACK-ONE-BYTE")
 	case hashStackEightByteLexeme:
 		builder.WriteString("HASH-STACK-EIGHT-BYTE")
+	case invertLexeme:
+		builder.WriteString("INVERT")
 	case modifierLexeme:
 		builder.WriteString("MODIFIER")
 	case separatorLexeme:
@@ -402,6 +405,8 @@ func produceLexemes(input []byte) (output []lexeme, err error) {
 				} else {
 					l = hashStackOneByteLexeme
 				}
+			case '\\':
+				l = invertLexeme
 			case '.':
 				l = writeStackToFileLexeme
 			case ',':

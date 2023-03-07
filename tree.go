@@ -637,6 +637,14 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 
 			output = hash.Uint64(content)
 		}
+	case invertLexeme:
+		{
+			if output == 0 {
+				output = 1
+			} else {
+				output = 0
+			}
+		}
 	case deleteFileLexeme:
 		{
 			if node.tree == nil {
@@ -785,6 +793,7 @@ func produceTree(input []lexeme) (output *tree, err error) {
 			saveStackUseIndexOneLexeme,
 			hashStackOneByteLexeme,
 			hashStackEightByteLexeme,
+			invertLexeme,
 			writeStackToFileLexeme,
 			readStackFromFileLexeme,
 			deleteFileLexeme,

@@ -14,11 +14,11 @@ go run .\error.go .\flag.go .\lexeme.go .\main.go .\tree.go "--file=examples/cou
 
 Each **dorklang** program has access to a 64-bit unsigned integer known as the **current value**, which is automatically assigned the value `0` when the program begins.
 
-It is also possible to enter a new context and gain access to another **current value**.
+It is possible to enter a new context and gain access to another current value.
 
 There are also two **stacks** available for storage. Only one of these is set as the **current stack** at any one time.
 
-The **current value** can be pushed onto and popped from the **current stack**. Each stack can hold a maximum of `1_048_576` values as 64-bit unsigned integers.
+The current value can be pushed onto &mdash; and popped from &mdash; the current stack. Each stack can hold a maximum of `1_048_576` values as 64-bit unsigned integers.
 
 Only one pair of stacks is available throughout the lifetime of the program, even if a new context is entered.
 

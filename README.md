@@ -92,3 +92,9 @@ Below is an overview of all the commands that can be used in **dorklang** source
 | `<` ... `>` | Runs any commands between the brackets repeatedly while the current value does not equal `0`. |
 | `<<` ... `>>` | Runs any commands between the brackets repeatedly while the current value equals `0`. |
 | `{` ... `}` | Ignores all characters and commands between the braces, allowing for human-readable comments. |
+
+## Support
+
+Please consider donating:
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/S6S2EIRL0)

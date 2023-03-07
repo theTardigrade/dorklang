@@ -84,9 +84,9 @@ Below is an overview of all the commands that can be used in **dorklang** source
 | `%\|` | Resets all state (i.e. clears both of the stacks and sets the current value to `0`). |
 | ` ` | Whitespace can be used to separate two single-character commands that could otherwise be interpreted as a multi-character command. |
 | `(` ... `)` | Creates a new context with a new current value of zero, in which any commands between the brackets are called, then adds the current value of the created context to the current value of the surrounding context. |
-| `((` ... `))` | Creates a new context with a new current value of zero, in which any commands between the brackets are called, then divides the current value of the surrounding context by the current value of the created context. |
+| `((` ... `))` | Creates a new context with a new current value of zero, in which any commands between the brackets are called, then multiplies the current value of the created context by the current value of the surrounding context. |
 | `[` ... `]` | Creates a new context with a new current value of zero, in which any commands between the brackets are called, then subtracts the current value of the created context from the current value of the surrounding context. |
-| `[[` ... `]]` | Creates a new context with a new current value of zero, in which any commands between the brackets are called, then multiplies the current value of the created context by the current value of the surrounding context. |
+| `[[` ... `]]` | Creates a new context with a new current value of zero, in which any commands between the brackets are called, then divides the current value of the surrounding context by the current value of the created context. |
 | `<` ... `>` | Runs any commands between the brackets repeatedly while the current value does not equal `0`. |
 | `<<` ... `>>` | Runs any commands between the brackets repeatedly while the current value equals `0`. |
 | `{` ... `}` | Ignores all characters and commands between the braces, allowing for human-readable comments. |

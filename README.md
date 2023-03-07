@@ -47,8 +47,8 @@ Below is an overview of all the commands that can be used in **dorklang** source
 | `%''` | Sets the current value to the size of eight mebibytes (i.e. `67_108_864`). |
 | `%"` | Sets the current value to the size of a gibibyte (i.e. `8_589_934_592`). |
 | `%""` | Sets the current value to the size of eight gibibytes (i.e. `68_719_476_736`). |
-| `\`` | Sets the current value to a random number between `0` and `255`. |
-| `\`\`` | Sets the current value to a random number between `0` and the maximum value for an unsigned 64-bit integer. |
+| `` ` `` | Sets the current value to a random number between `0` and `255`. |
+| ``` `` ``` | Sets the current value to a random number between `0` and the maximum value for an unsigned 64-bit integer. |
 | `@` | Sets the current value to the number of seconds in a UNIX-timestamp representation of the current time. |
 | `@@` | Sets the current value to the number of nanoseconds in a UNIX-timestamp representation of the current time. |
 | `$` | Uses the first of two stacks when calling further commands that make use of a stack. |

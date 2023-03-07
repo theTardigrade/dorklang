@@ -413,7 +413,7 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 		}
 
 		node.tree.saveStackIndex = 1
-	case saveToStackLexeme:
+	case pushStackLexeme:
 		if node.tree == nil {
 			err = ErrTreeUnfound
 			return
@@ -432,7 +432,7 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 		}
 
 		*saveStackPtr = append(saveStack, output)
-	case loadFromStackLexeme:
+	case popStackLexeme:
 		if node.tree == nil {
 			err = ErrTreeUnfound
 			return
@@ -700,8 +700,8 @@ func produceTree(input []lexeme) (output *tree, err error) {
 			printNumberLexeme,
 			inputCharacterLexeme,
 			inputNumberLexeme,
-			saveToStackLexeme,
-			loadFromStackLexeme,
+			pushStackLexeme,
+			popStackLexeme,
 			saveStackUseIndexZeroLexeme,
 			saveStackUseIndexOneLexeme,
 			hashStackOneByteLexeme,

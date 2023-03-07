@@ -20,7 +20,7 @@ It is possible to enter a new context and gain access to another current value.
 
 Given that integer values rollover, it is possible to reach the maximum value that can be held by the current value by setting it to `0`, if it isn't already, and then subtracting `1`.
 
-## Current Stack
+### Current Stack
 
 There are also two **stacks** available for storage. Only one of these is set as the **current stack** at any one time.
 

@@ -517,24 +517,41 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 
 		node.tree.saveStackIndex = 1
 	case pushStackLexeme:
-		if node.tree == nil {
-			err = ErrTreeUnfound
-			return
-		}
+		{
+			if node.tree == nil {
+				err = ErrTreeUnfound
+				return
+			}
 
-		var saveStackPtr *[]uint64
-		saveStackPtr, err = node.tree.saveStackPtr()
-		if err != nil {
-			return
-		}
-		saveStack := *saveStackPtr
+			var saveStackPtr *[]uint64
+			saveStackPtr, err = node.tree.saveStackPtr()
+			if err != nil {
+				return
+			}
+			saveStack := *saveStackPtr
 
-		if len(saveStack) == treeSaveStackMaxLen {
-			err = ErrTreeSaveStackFull
-			return
-		}
+			if len(saveStack) == treeSaveStackMaxLen {
+				err = ErrTreeSaveStackFull
+				return
+			}
 
-		*saveStackPtr = append(saveStack, output)
+			*saveStackPtr = append(saveStack, output)
+		}
+	case countStackLexeme:
+		{
+			if node.tree == nil {
+				err = ErrTreeUnfound
+				return
+			}
+
+			var saveStack []uint64
+			saveStack, err = node.tree.saveStack()
+			if err != nil {
+				return
+			}
+
+			output = uint64(len(saveStack))
+		}
 	case popStackLastLexeme:
 		{
 			if node.tree == nil {
@@ -902,6 +919,7 @@ func produceTree(input []lexeme) (output *tree, err error) {
 			logicalAndStackPairLexeme,
 			logicalAndStackWholeLexeme,
 			pushStackLexeme,
+			countStackLexeme,
 			popStackLastLexeme,
 			popStackRandomLexeme,
 			saveStackUseIndexZeroLexeme,

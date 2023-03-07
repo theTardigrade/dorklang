@@ -74,6 +74,7 @@ Below is an overview of all the commands that can be used in **dorklang** source
 | `$` | Uses the first of two stacks when calling further commands that make use of a stack. |
 | `$$` | Uses the second of two stacks when calling further commands that make use of a stack. |
 | `:` | Pushes the **current value** to the end of the **current stack**. |
+| `%:` | Sets the **current value** to the number of values stored in the **current stack**. |
 | `;` | Sets the **current value** to a value popped from the end of the **current stack**. |
 | `%;` | Sets the **current value** to a value popped from a random position in the **current stack**. |
 | `#` | Pops all the values from the **current stack**, performs an 8-bit hash on them and sets the **current value** to the result. |

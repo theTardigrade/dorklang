@@ -68,6 +68,7 @@ const (
 	clearStackLexeme
 	resetStateLexeme
 	pushStackLexeme
+	countStackLexeme
 	popStackLastLexeme
 	popStackRandomLexeme
 	saveStackUseIndexZeroLexeme
@@ -408,7 +409,11 @@ func produceLexemes(input []byte) (output []lexeme, err error) {
 					l = saveStackUseIndexZeroLexeme
 				}
 			case ':':
-				l = pushStackLexeme
+				if len(output) > 0 && output[len(output)-1] == modifierLexeme {
+					output[len(output)-1] = countStackLexeme
+				} else {
+					l = pushStackLexeme
+				}
 			case ';':
 				if len(output) > 0 && output[len(output)-1] == modifierLexeme {
 					output[len(output)-1] = popStackRandomLexeme

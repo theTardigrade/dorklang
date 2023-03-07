@@ -22,7 +22,7 @@ Given that integer values rollover, it is possible to reach the maximum value th
 
 ### Current Stack
 
-There are also two **stacks** available for storage. Only one of these is set as the **current stack** at any one time.
+There are also two stacks available for storage. Only one of these is set as the **current stack** at any one time.
 
 The current value can be pushed onto and popped from the current stack. Each stack can hold a maximum of `1_048_576` values, each of which is a 64-bit unsigned integer.
 

@@ -76,7 +76,7 @@ Below is an overview of all the commands that can be used in **dorklang** source
 | `%;` | Sets the current value to a value popped from a random position in the current stack. |
 | `#` | Pops all the values from the current stack, performs an 8-bit hash on them and sets the current value to the result. |
 | `##` | Pops all the values from the current stack, performs a 64-bit hash on them and sets the current value to the result. |
-| `\` | Inverts the current value as though it were a boolean (i.e. sets the current value to '0', if it is not already '0', otherwise sets it to '1'). |
+| `\` | Inverts the current value as though it were a boolean (i.e. sets the current value to `0`, if it is not already `0`, otherwise sets it to `1`). |
 | `.` | Saves the current stack to a file, using the Unicode/ASCII representation of each value on the stack. The filename is based on the current value. |
 | `,` | Loads the current stack from a file, using the Unicode/ASCII representation of each value on the stack. The filename is based on the current value. |
 | `\|` | Deletes a file representing a saved stack. The filename is based on the current value. |

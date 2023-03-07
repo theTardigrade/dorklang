@@ -46,6 +46,8 @@ const (
 	setEightMebibyteLexeme
 	setOneGibibyteLexeme
 	setEightGibibyteLexeme
+	setRandomByteLexeme
+	setRandomMaxLexeme
 	setSecondTimestampLexeme
 	setNanosecondTimestampLexeme
 	printCharacterLexeme
@@ -147,6 +149,10 @@ func (lexeme lexeme) String() string {
 		builder.WriteString("SET-ONE-GIBI")
 	case setEightGibibyteLexeme:
 		builder.WriteString("SET-EIGHT-GIBI")
+	case setRandomByteLexeme:
+		builder.WriteString("SET-RAND-BYTE")
+	case setRandomMaxLexeme:
+		builder.WriteString("SET-RAND-MAX")
 	case setSecondTimestampLexeme:
 		builder.WriteString("SET-SEC-TIME")
 	case setNanosecondTimestampLexeme:
@@ -348,6 +354,12 @@ func produceLexemes(input []byte) (output []lexeme, err error) {
 					default:
 						l = setOneKibibyteLexeme
 					}
+				}
+			case '`':
+				if len(output) > 0 && output[len(output)-1] == setRandomByteLexeme {
+					output[len(output)-1] = setRandomMaxLexeme
+				} else {
+					l = setRandomByteLexeme
 				}
 			case '@':
 				if len(output) > 0 && output[len(output)-1] == setSecondTimestampLexeme {

@@ -2,7 +2,10 @@ package main
 
 import (
 	"bytes"
+	"crypto/rand"
 	"fmt"
+	"math"
+	"math/big"
 	"os"
 	"strconv"
 	"time"
@@ -395,6 +398,33 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 		output = 1 << 33 // 8_589_934_592
 	case setEightGibibyteLexeme:
 		output = 1 << 36 // 68_719_476_736
+	case setRandomByteLexeme:
+		{
+			b := make([]byte, 1)
+
+			if _, err = rand.Reader.Read(b); err != nil {
+				return
+			}
+
+			output = uint64(b[0])
+		}
+	case setRandomMaxLexeme:
+		{
+			var b, b2 *big.Int
+
+			b = big.NewInt(1)
+
+			b2 = new(big.Int)
+			b2.SetUint64(math.MaxUint64)
+			b2.Add(b2, b)
+
+			b, err = rand.Int(rand.Reader, b2)
+			if err != nil {
+				return
+			}
+
+			output = b.Uint64()
+		}
 	case setSecondTimestampLexeme:
 		output = uint64(time.Now().Unix())
 	case setNanosecondTimestampLexeme:
@@ -694,6 +724,8 @@ func produceTree(input []lexeme) (output *tree, err error) {
 			setEightMebibyteLexeme,
 			setOneGibibyteLexeme,
 			setEightGibibyteLexeme,
+			setRandomByteLexeme,
+			setRandomMaxLexeme,
 			setSecondTimestampLexeme,
 			setNanosecondTimestampLexeme,
 			printCharacterLexeme,

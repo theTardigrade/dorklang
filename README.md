@@ -14,7 +14,7 @@ go run .\error.go .\flag.go .\lexeme.go .\main.go .\tree.go "--file=examples/cou
 
 Below is an overview of all the commands that can be used in **dorklang** source-code files:
 
-| Command | Meaning |
+| Command | Function |
 | :--------: | ------- |
 | `+` | Adds `1` to the current value. |
 | `++` | Adds `8` to the current value. |

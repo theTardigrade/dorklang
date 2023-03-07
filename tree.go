@@ -95,7 +95,9 @@ func (node *parentTreeNode) value(input uint64) (output uint64, err error) {
 			}
 		}
 	case startAdditionSectionLexeme,
-		startSubtractionSectionLexeme:
+		startSubtractionSectionLexeme,
+		startMultiplicationSectionLexeme,
+		startDivisionSectionLexeme:
 		{
 			var localOutput uint64
 
@@ -106,10 +108,18 @@ func (node *parentTreeNode) value(input uint64) (output uint64, err error) {
 				}
 			}
 
-			if node.lexeme == startAdditionSectionLexeme {
+			switch node.lexeme {
+			case startAdditionSectionLexeme:
 				output += localOutput
-			} else {
+			case startSubtractionSectionLexeme:
 				output -= localOutput
+			case startMultiplicationSectionLexeme:
+				output *= localOutput
+			case startDivisionSectionLexeme:
+				output /= localOutput
+			default:
+				err = ErrLexemeUnrecognized
+				return
 			}
 		}
 	case startCommentSectionLexeme:
@@ -697,6 +707,8 @@ func produceTree(input []lexeme) (output *tree, err error) {
 		switch l {
 		case startAdditionSectionLexeme,
 			startSubtractionSectionLexeme,
+			startMultiplicationSectionLexeme,
+			startDivisionSectionLexeme,
 			startJumpIfPositiveSectionLexeme,
 			startJumpIfZeroSectionLexeme,
 			startCommentSectionLexeme:
@@ -718,6 +730,8 @@ func produceTree(input []lexeme) (output *tree, err error) {
 			}
 		case endAdditionSectionLexeme,
 			endSubtractionSectionLexeme,
+			endMultiplicationSectionLexeme,
+			endDivisionSectionLexeme,
 			endJumpIfPositiveSectionLexeme,
 			endJumpIfZeroSectionLexeme,
 			endCommentSectionLexeme:

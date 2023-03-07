@@ -13,6 +13,10 @@ const (
 	endAdditionSectionLexeme
 	startSubtractionSectionLexeme
 	endSubtractionSectionLexeme
+	startMultiplicationSectionLexeme
+	endMultiplicationSectionLexeme
+	startDivisionSectionLexeme
+	endDivisionSectionLexeme
 	startJumpIfPositiveSectionLexeme
 	endJumpIfPositiveSectionLexeme
 	startJumpIfZeroSectionLexeme
@@ -84,6 +88,14 @@ func (lexeme lexeme) String() string {
 		builder.WriteString("START-SUB-SECT")
 	case endSubtractionSectionLexeme:
 		builder.WriteString("END-SUB-SECT")
+	case startMultiplicationSectionLexeme:
+		builder.WriteString("START-MULT-SECT")
+	case endMultiplicationSectionLexeme:
+		builder.WriteString("END-MULT-SECT")
+	case startDivisionSectionLexeme:
+		builder.WriteString("START-DIV-SECT")
+	case endDivisionSectionLexeme:
+		builder.WriteString("END-DIV-SECT")
 	case startJumpIfPositiveSectionLexeme:
 		builder.WriteString("START-JMP-IF-POS-SECT")
 	case endJumpIfPositiveSectionLexeme:
@@ -413,33 +425,117 @@ func produceLexemes(input []byte) (output []lexeme, err error) {
 					}
 				}
 			case '(':
-				l = startAdditionSectionLexeme
-				sectionStack = append(sectionStack, l)
+				if len(output) > 0 && output[len(output)-1] == startAdditionSectionLexeme {
+					if len(sectionStack) == 0 {
+						err = ErrLexemeSectionStackEmpty
+						return
+					}
+					if sectionStack[len(sectionStack)-1] != startAdditionSectionLexeme {
+						err = ErrLexemeSectionStackNoMatch
+						return
+					}
+					sectionStack[len(sectionStack)-1] = startMultiplicationSectionLexeme
+					output[len(output)-1] = startMultiplicationSectionLexeme
+				} else {
+					l = startAdditionSectionLexeme
+					sectionStack = append(sectionStack, l)
+				}
 			case ')':
-				l = endAdditionSectionLexeme
-				if len(sectionStack) == 0 {
-					err = ErrNoMatchSectionCharacters
-					return
+				{
+					var localLexeme lexeme
+
+					if len(output) > 0 && output[len(output)-1] == endAdditionSectionLexeme {
+						localLexeme = endMultiplicationSectionLexeme
+						output[len(output)-1] = localLexeme
+					} else {
+						localLexeme = endAdditionSectionLexeme
+						l = localLexeme
+					}
+
+					if len(sectionStack) == 0 {
+						err = ErrNoMatchSectionCharacters
+						return
+					}
+
+					switch localLexeme {
+					case endAdditionSectionLexeme:
+						if i+1 < len(input) && input[i+1] == r {
+							localLexeme = invalidLexeme
+						} else {
+							localLexeme = startAdditionSectionLexeme
+						}
+					case endMultiplicationSectionLexeme:
+						localLexeme = startMultiplicationSectionLexeme
+					default:
+						err = ErrLexemeSectionStackNoMatch
+						return
+					}
+
+					if localLexeme != invalidLexeme {
+						if sectionStack[len(sectionStack)-1] != localLexeme {
+							err = ErrLexemeSectionStackNoMatch
+							return
+						}
+
+						sectionStack = sectionStack[:len(sectionStack)-1]
+					}
 				}
-				if sectionStack[len(sectionStack)-1] != startAdditionSectionLexeme {
-					err = ErrLexemeSectionStackNoMatch
-					return
-				}
-				sectionStack = sectionStack[:len(sectionStack)-1]
 			case '[':
-				l = startSubtractionSectionLexeme
-				sectionStack = append(sectionStack, l)
+				if len(output) > 0 && output[len(output)-1] == startSubtractionSectionLexeme {
+					if len(sectionStack) == 0 {
+						err = ErrLexemeSectionStackEmpty
+						return
+					}
+					if sectionStack[len(sectionStack)-1] != startSubtractionSectionLexeme {
+						err = ErrLexemeSectionStackNoMatch
+						return
+					}
+					sectionStack[len(sectionStack)-1] = startDivisionSectionLexeme
+					output[len(output)-1] = startDivisionSectionLexeme
+				} else {
+					l = startSubtractionSectionLexeme
+					sectionStack = append(sectionStack, l)
+				}
 			case ']':
-				l = endSubtractionSectionLexeme
-				if len(sectionStack) == 0 {
-					err = ErrNoMatchSectionCharacters
-					return
+				{
+					var localLexeme lexeme
+
+					if len(output) > 0 && output[len(output)-1] == endSubtractionSectionLexeme {
+						localLexeme = endDivisionSectionLexeme
+						output[len(output)-1] = localLexeme
+					} else {
+						localLexeme = endSubtractionSectionLexeme
+						l = localLexeme
+					}
+
+					if len(sectionStack) == 0 {
+						err = ErrNoMatchSectionCharacters
+						return
+					}
+
+					switch localLexeme {
+					case endSubtractionSectionLexeme:
+						if i+1 < len(input) && input[i+1] == r {
+							localLexeme = invalidLexeme
+						} else {
+							localLexeme = startSubtractionSectionLexeme
+						}
+					case endDivisionSectionLexeme:
+						localLexeme = startDivisionSectionLexeme
+					default:
+						err = ErrLexemeSectionStackNoMatch
+						return
+					}
+
+					if localLexeme != invalidLexeme {
+						if sectionStack[len(sectionStack)-1] != localLexeme {
+							err = ErrLexemeSectionStackNoMatch
+							return
+						}
+
+						sectionStack = sectionStack[:len(sectionStack)-1]
+					}
 				}
-				if sectionStack[len(sectionStack)-1] != startSubtractionSectionLexeme {
-					err = ErrLexemeSectionStackNoMatch
-					return
-				}
-				sectionStack = sectionStack[:len(sectionStack)-1]
 			case '<':
 				if len(output) > 0 && output[len(output)-1] == startJumpIfPositiveSectionLexeme {
 					if len(sectionStack) == 0 {

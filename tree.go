@@ -637,6 +637,56 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 
 			output = hash.Uint64(content)
 		}
+	case iotaFromZeroLexeme:
+		{
+			if node.tree == nil {
+				err = ErrTreeUnfound
+				return
+			}
+
+			var saveStackPtr *[]uint64
+			saveStackPtr, err = node.tree.saveStackPtr()
+			if err != nil {
+				return
+			}
+			saveStack := *saveStackPtr
+
+			for i := uint64(0); i < output; i++ {
+				if len(saveStack) == treeSaveStackMaxLen {
+					err = ErrTreeSaveStackFull
+					return
+				}
+
+				saveStack = append(saveStack, i)
+			}
+
+			*saveStackPtr = saveStack
+		}
+	case iotaFromOneLexeme:
+		{
+			if node.tree == nil {
+				err = ErrTreeUnfound
+				return
+			}
+
+			var saveStackPtr *[]uint64
+			saveStackPtr, err = node.tree.saveStackPtr()
+			if err != nil {
+				return
+			}
+			saveStack := *saveStackPtr
+
+			for i := uint64(1); i < output; i++ {
+				if len(saveStack) == treeSaveStackMaxLen {
+					err = ErrTreeSaveStackFull
+					return
+				}
+
+				saveStack = append(saveStack, i)
+			}
+
+			*saveStackPtr = saveStack
+		}
 	case invertLexeme:
 		{
 			if output == 0 {
@@ -794,6 +844,8 @@ func produceTree(input []lexeme) (output *tree, err error) {
 			hashStackOneByteLexeme,
 			hashStackEightByteLexeme,
 			invertLexeme,
+			iotaFromZeroLexeme,
+			iotaFromOneLexeme,
 			writeStackToFileLexeme,
 			readStackFromFileLexeme,
 			deleteFileLexeme,

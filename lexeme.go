@@ -58,6 +58,8 @@ const (
 	printNumberLexeme
 	inputCharacterLexeme
 	inputNumberLexeme
+	iotaFromZeroLexeme
+	iotaFromOneLexeme
 	writeStackToFileLexeme
 	readStackFromFileLexeme
 	deleteFileLexeme
@@ -175,6 +177,14 @@ func (lexeme lexeme) String() string {
 		builder.WriteString("PRINT-CHAR")
 	case printNumberLexeme:
 		builder.WriteString("PRINT-NUM")
+	case inputCharacterLexeme:
+		builder.WriteString("INPUT-CHAR")
+	case inputNumberLexeme:
+		builder.WriteString("INPUT-NUM")
+	case iotaFromZeroLexeme:
+		builder.WriteString("IOTA-ZERO")
+	case iotaFromOneLexeme:
+		builder.WriteString("IOTA-ONE")
 	case writeStackToFileLexeme:
 		builder.WriteString("WRITE-STACK-FILE")
 	case readStackFromFileLexeme:
@@ -411,6 +421,12 @@ func produceLexemes(input []byte) (output []lexeme, err error) {
 				l = writeStackToFileLexeme
 			case ',':
 				l = readStackFromFileLexeme
+			case 'i':
+				if len(output) > 0 && output[len(output)-1] == iotaFromZeroLexeme {
+					output[len(output)-1] = iotaFromOneLexeme
+				} else {
+					l = iotaFromZeroLexeme
+				}
 			case '|':
 				{
 					outputLen := len(output)

@@ -462,26 +462,58 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 		}
 
 		*saveStackPtr = append(saveStack, output)
-	case popStackLexeme:
-		if node.tree == nil {
-			err = ErrTreeUnfound
-			return
-		}
+	case popStackLastLexeme:
+		{
+			if node.tree == nil {
+				err = ErrTreeUnfound
+				return
+			}
 
-		var saveStackPtr *[]uint64
-		saveStackPtr, err = node.tree.saveStackPtr()
-		if err != nil {
-			return
-		}
-		saveStack := *saveStackPtr
+			var saveStackPtr *[]uint64
+			saveStackPtr, err = node.tree.saveStackPtr()
+			if err != nil {
+				return
+			}
+			saveStack := *saveStackPtr
 
-		if len(saveStack) == 0 {
-			err = ErrTreeSaveStackEmpty
-			return
-		}
+			if len(saveStack) == 0 {
+				err = ErrTreeSaveStackEmpty
+				return
+			}
 
-		output = saveStack[len(saveStack)-1]
-		*saveStackPtr = saveStack[:len(saveStack)-1]
+			output = saveStack[len(saveStack)-1]
+			*saveStackPtr = saveStack[:len(saveStack)-1]
+		}
+	case popStackRandomLexeme:
+		{
+			if node.tree == nil {
+				err = ErrTreeUnfound
+				return
+			}
+
+			var saveStackPtr *[]uint64
+			saveStackPtr, err = node.tree.saveStackPtr()
+			if err != nil {
+				return
+			}
+			saveStack := *saveStackPtr
+
+			if len(saveStack) == 0 {
+				err = ErrTreeSaveStackEmpty
+				return
+			}
+
+			b := big.NewInt(int64(len(saveStack)))
+			b, err = rand.Int(rand.Reader, b)
+			if err != nil {
+				return
+			}
+
+			index := b.Uint64()
+
+			output = saveStack[index]
+			*saveStackPtr = append(saveStack[:index], saveStack[index+1:]...)
+		}
 	case writeStackToFileLexeme:
 		{
 			if node.tree == nil {
@@ -733,7 +765,8 @@ func produceTree(input []lexeme) (output *tree, err error) {
 			inputCharacterLexeme,
 			inputNumberLexeme,
 			pushStackLexeme,
-			popStackLexeme,
+			popStackLastLexeme,
+			popStackRandomLexeme,
 			saveStackUseIndexZeroLexeme,
 			saveStackUseIndexOneLexeme,
 			hashStackOneByteLexeme,

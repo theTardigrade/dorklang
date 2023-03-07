@@ -60,7 +60,8 @@ const (
 	clearStackLexeme
 	resetStateLexeme
 	pushStackLexeme
-	popStackLexeme
+	popStackLastLexeme
+	popStackRandomLexeme
 	saveStackUseIndexZeroLexeme
 	saveStackUseIndexOneLexeme
 	hashStackOneByteLexeme
@@ -171,8 +172,10 @@ func (lexeme lexeme) String() string {
 		builder.WriteString("CLEAR-STACK")
 	case pushStackLexeme:
 		builder.WriteString("PUSH-STACK")
-	case popStackLexeme:
-		builder.WriteString("POP-STACK")
+	case popStackLastLexeme:
+		builder.WriteString("POP-STACK-LAST")
+	case popStackRandomLexeme:
+		builder.WriteString("POP-STACK-RAND")
 	case saveStackUseIndexZeroLexeme:
 		builder.WriteString("USE-STACK-ZERO")
 	case saveStackUseIndexOneLexeme:
@@ -376,7 +379,11 @@ func produceLexemes(input []byte) (output []lexeme, err error) {
 			case ':':
 				l = pushStackLexeme
 			case ';':
-				l = popStackLexeme
+				if len(output) > 0 && output[len(output)-1] == modifierLexeme {
+					output[len(output)-1] = popStackRandomLexeme
+				} else {
+					l = popStackLastLexeme
+				}
 			case '#':
 				if len(output) > 0 && output[len(output)-1] == hashStackOneByteLexeme {
 					output[len(output)-1] = hashStackEightByteLexeme

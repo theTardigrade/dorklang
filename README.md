@@ -95,6 +95,6 @@ Below is an overview of all the commands that can be used in **dorklang** source
 
 ## Support
 
-Please consider donating:
+Please consider donating if you want to support my work:
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/S6S2EIRL0)

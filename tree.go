@@ -58,12 +58,12 @@ func (tree *tree) saveStackPtr() (stackPtr *[]uint64, err error) {
 }
 
 func (tree *tree) saveStack() (stack []uint64, err error) {
-	if tree.saveStackIndex >= uint64(len(tree.saveStacks)) {
-		err = ErrTreeSaveStackIndexInvalid
+	stackPtr, err := tree.saveStackPtr()
+	if err != nil {
 		return
 	}
 
-	stack = tree.saveStacks[tree.saveStackIndex]
+	stack = *stackPtr
 
 	return
 }
@@ -389,6 +389,69 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 	case inputNumberLexeme:
 		if _, err = fmt.Scanf("%d", &output); err != nil {
 			return
+		}
+	case logicalAndStackPairLexeme:
+		{
+			if node.tree == nil {
+				err = ErrTreeUnfound
+				return
+			}
+
+			var saveStack []uint64
+			saveStack, err = node.tree.saveStack()
+			if err != nil {
+				return
+			}
+
+			if len(saveStack) < 2 {
+				err = ErrTreeSaveStackEmpty
+				return
+			}
+
+			value1 := saveStack[len(saveStack)-1]
+			value2 := saveStack[len(saveStack)-2]
+
+			result := value1 > 0 && value2 > 0
+
+			if result {
+				output = 1
+			} else {
+				output = 0
+			}
+		}
+	case logicalAndStackWholeLexeme:
+		{
+			if node.tree == nil {
+				err = ErrTreeUnfound
+				return
+			}
+
+			var saveStack []uint64
+			saveStack, err = node.tree.saveStack()
+			if err != nil {
+				return
+			}
+
+			if len(saveStack) == 0 {
+				err = ErrTreeSaveStackEmpty
+				return
+			}
+
+			result := saveStack[len(saveStack)-1] > 0
+
+			for i := len(saveStack) - 2; i >= 0; i-- {
+				if !result {
+					break
+				}
+
+				result = saveStack[i] > 0
+			}
+
+			if result {
+				output = 1
+			} else {
+				output = 0
+			}
 		}
 	case setZeroLexeme:
 		output = 0
@@ -836,6 +899,8 @@ func produceTree(input []lexeme) (output *tree, err error) {
 			printNumberLexeme,
 			inputCharacterLexeme,
 			inputNumberLexeme,
+			logicalAndStackPairLexeme,
+			logicalAndStackWholeLexeme,
 			pushStackLexeme,
 			popStackLastLexeme,
 			popStackRandomLexeme,

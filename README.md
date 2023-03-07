@@ -69,6 +69,8 @@ Below is an overview of all the commands that can be used in **dorklang** source
 | ``` `` ``` | Sets the current value to a random number between `0` and the maximum value for an unsigned 64-bit integer. |
 | `@` | Sets the current value to the number of seconds in a UNIX-timestamp representation of the current time. |
 | `@@` | Sets the current value to the number of nanoseconds in a UNIX-timestamp representation of the current time. |
+| `%&` | Performs a logical AND operation on the two topmost values in the current stack, setting the current value to `1` if both values from the stack do not equal `0`, otherwise setting the current value to `0`. No values are popped from the current stack. |
+| `%&&` | Performs a logical AND operation on all of the values in the current stack, setting the current value to `1` if all values from the stack do not equal `0`, otherwise setting the current value to `0`. No values are popped from the current stack. |
 | `$` | Uses the first of two stacks when calling further commands that make use of a stack. |
 | `$$` | Uses the second of two stacks when calling further commands that make use of a stack. |
 | `:` | Pushes the current value to the end of the current stack. |

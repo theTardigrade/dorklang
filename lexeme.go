@@ -60,6 +60,8 @@ const (
 	inputNumberLexeme
 	iotaFromZeroLexeme
 	iotaFromOneLexeme
+	logicalAndStackPairLexeme
+	logicalAndStackWholeLexeme
 	writeStackToFileLexeme
 	readStackFromFileLexeme
 	deleteFileLexeme
@@ -181,6 +183,10 @@ func (lexeme lexeme) String() string {
 		builder.WriteString("INPUT-CHAR")
 	case inputNumberLexeme:
 		builder.WriteString("INPUT-NUM")
+	case logicalAndStackPairLexeme:
+		builder.WriteString("LOGIC-AND-STACK-PAIR")
+	case logicalAndStackWholeLexeme:
+		builder.WriteString("LOGIC-AND-STACK-WHOLE")
 	case iotaFromZeroLexeme:
 		builder.WriteString("IOTA-ZERO")
 	case iotaFromOneLexeme:
@@ -414,6 +420,22 @@ func produceLexemes(input []byte) (output []lexeme, err error) {
 					output[len(output)-1] = hashStackEightByteLexeme
 				} else {
 					l = hashStackOneByteLexeme
+				}
+			case '&':
+				{
+					outputLen := len(output)
+					lastOutput := invalidLexeme
+
+					if outputLen > 0 {
+						lastOutput = output[outputLen-1]
+					}
+
+					switch lastOutput {
+					case logicalAndStackPairLexeme:
+						output[outputLen-1] = logicalAndStackWholeLexeme
+					case modifierLexeme:
+						output[outputLen-1] = logicalAndStackPairLexeme
+					}
 				}
 			case '\\':
 				l = invertLexeme

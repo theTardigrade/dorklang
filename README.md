@@ -12,11 +12,15 @@ go run .\error.go .\flag.go .\lexeme.go .\main.go .\tree.go "--file=examples/cou
 
 ## Storage
 
+### Current Value
+
 Each **dorklang** program has access to a 64-bit unsigned integer known as the **current value**, which is automatically assigned the value `0` when the program begins.
 
 It is possible to enter a new context and gain access to another current value.
 
 Given that integer values rollover, it is possible to reach the maximum value that can be held by the current value by setting it to `0`, if it isn't already, and then subtracting `1`.
+
+## Current Stack
 
 There are also two **stacks** available for storage. Only one of these is set as the **current stack** at any one time.
 

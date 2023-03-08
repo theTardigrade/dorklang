@@ -7,6 +7,7 @@ import (
 	"math"
 	"math/big"
 	"os"
+	"sort"
 	"strconv"
 	"time"
 
@@ -776,6 +777,24 @@ func (node *terminalTreeNode) value(input memoryCell) (output memoryCell, err er
 
 			output = memoryCell(hash.Uint64(content))
 		}
+	case sortStackLexeme:
+		{
+			if node.tree == nil {
+				err = ErrTreeUnfound
+				return
+			}
+
+			var saveStackPtr *memoryCellCollection
+			saveStackPtr, err = node.tree.saveStackPtr()
+			if err != nil {
+				return
+			}
+			saveStack := *saveStackPtr
+
+			sort.Sort(saveStack)
+
+			*saveStackPtr = saveStack
+		}
 	case iotaFromZeroLexeme:
 		{
 			if node.tree == nil {
@@ -995,6 +1014,7 @@ func produceTree(input []token) (output *tree, err error) {
 			saveStackUseIndexOneLexeme,
 			hashStackOneByteLexeme,
 			hashStackEightByteLexeme,
+			sortStackLexeme,
 			invertLexeme,
 			iotaFromZeroLexeme,
 			iotaFromOneLexeme,

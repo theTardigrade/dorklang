@@ -287,6 +287,8 @@ func produceTokens(input []byte) (output []token, err error) {
 				l = writeStackToFileLexeme
 			case ',':
 				l = readStackFromFileLexeme
+			case 's':
+				l = sortStackLexeme
 			case 'i':
 				if len(output) > 0 && output[len(output)-1].lex == iotaFromZeroLexeme {
 					output[len(output)-1].lex = iotaFromOneLexeme

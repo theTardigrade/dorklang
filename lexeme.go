@@ -77,7 +77,8 @@ const (
 	saveStackUseIndexOneLexeme
 	hashStackOneByteLexeme
 	hashStackEightByteLexeme
-	plaintextLexeme
+	sortStackLexeme
+	plaintextLexeme // only used within read-file sections
 	invertLexeme
 	modifierLexeme
 	separatorLexeme
@@ -221,6 +222,8 @@ func (lexeme lexeme) String() string {
 		builder.WriteString("HASH-STACK-ONE-BYTE")
 	case hashStackEightByteLexeme:
 		builder.WriteString("HASH-STACK-EIGHT-BYTE")
+	case sortStackLexeme:
+		builder.WriteString("SORT-STACK")
 	case invertLexeme:
 		builder.WriteString("INVERT")
 	case modifierLexeme:

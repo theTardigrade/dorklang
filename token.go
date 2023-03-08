@@ -1,6 +1,8 @@
 package main
 
-import "unicode"
+import (
+	"unicode"
+)
 
 type token struct {
 	lex  lexeme

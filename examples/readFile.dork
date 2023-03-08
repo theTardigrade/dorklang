@@ -1,0 +1,15 @@
+{THIS PROGRAM READS A FILE AND OUTPUTS ITS CONTENTS}
+
+{
+                        NOTE
+    It is necessary to run the dorklang interpreter
+    from the example directory, so that it can find
+    the file, since a relative path has been given.
+}
+
+$
+{{ readFileText.txt }}
+%:
+<-$$:
+    $;!
+$$;>

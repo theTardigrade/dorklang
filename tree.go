@@ -784,16 +784,45 @@ func (node *terminalTreeNode) value(input memoryCell) (output memoryCell, err er
 				return
 			}
 
-			var saveStackPtr *memoryCellCollection
-			saveStackPtr, err = node.tree.saveStackPtr()
+			var saveStack memoryCellCollection
+			saveStack, err = node.tree.saveStack()
 			if err != nil {
 				return
 			}
-			saveStack := *saveStackPtr
 
 			sort.Sort(saveStack)
+		}
+	case shuffleStackLexeme:
+		{
+			if node.tree == nil {
+				err = ErrTreeUnfound
+				return
+			}
 
-			*saveStackPtr = saveStack
+			var saveStack memoryCellCollection
+			saveStack, err = node.tree.saveStack()
+			if err != nil {
+				return
+			}
+
+			indicesToSwap := make([]uint64, len(saveStack))
+
+			var b, b2 *big.Int
+
+			b = big.NewInt(int64(len(saveStack)))
+
+			for i := 0; i < len(indicesToSwap); i++ {
+				b2, err = rand.Int(rand.Reader, b)
+				if err != nil {
+					return
+				}
+
+				indicesToSwap[i] = b2.Uint64()
+			}
+
+			for i, j := range indicesToSwap {
+				saveStack[i], saveStack[j] = saveStack[j], saveStack[i]
+			}
 		}
 	case iotaFromZeroLexeme:
 		{
@@ -1015,6 +1044,7 @@ func produceTree(input []token) (output *tree, err error) {
 			hashStackOneByteLexeme,
 			hashStackEightByteLexeme,
 			sortStackLexeme,
+			shuffleStackLexeme,
 			invertLexeme,
 			iotaFromZeroLexeme,
 			iotaFromOneLexeme,

@@ -11,18 +11,18 @@ func main() {
 		panic(err)
 	}
 
-	lexemes, err := produceLexemes(fileContents)
+	tokens, err := produceTokens(fileContents)
 	if err != nil {
 		panic(err)
 	}
 
 	if *flagDebug {
-		for _, l := range lexemes {
-			log.Printf("lexeme: %s\n", l)
+		for _, t := range tokens {
+			log.Printf("lexeme: %s\n", t.lex)
 		}
 	}
 
-	tree, err := produceTree(lexemes)
+	tree, err := produceTree(tokens)
 	if err != nil {
 		panic(err)
 	}

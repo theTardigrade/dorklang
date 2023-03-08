@@ -25,18 +25,32 @@ type tree struct {
 }
 
 type treeNode interface {
+	getTree() *tree
+	getData() []byte
 	value(uint64) (uint64, error)
 }
 
+type defaultTreeNode struct {
+	lexeme lexeme
+	data   []byte
+	tree   *tree
+}
+
+func (node defaultTreeNode) getTree() *tree {
+	return node.tree
+}
+
+func (node defaultTreeNode) getData() []byte {
+	return node.data
+}
+
 type parentTreeNode struct {
-	lexeme     lexeme
-	tree       *tree
+	defaultTreeNode
 	childNodes []treeNode
 }
 
 type terminalTreeNode struct {
-	lexeme     lexeme
-	tree       *tree
+	defaultTreeNode
 	parentNode *parentTreeNode
 }
 
@@ -120,6 +134,51 @@ func (node *parentTreeNode) value(input uint64) (output uint64, err error) {
 			default:
 				err = ErrLexemeUnrecognized
 				return
+			}
+		}
+	case startReadFileSectionLexeme:
+		{
+			for _, node := range node.childNodes {
+				data := node.getData()
+
+				if len(data) == 0 {
+					continue
+				}
+
+				tree := node.getTree()
+
+				if tree == nil {
+					err = ErrTreeUnfound
+					return
+				}
+
+				fileName := string(data)
+
+				var content []byte
+				content, err = os.ReadFile(fileName)
+				if err != nil {
+					return
+				}
+
+				var saveStackPtr *[]uint64
+				saveStackPtr, err = tree.saveStackPtr()
+				if err != nil {
+					return
+				}
+				saveStack := *saveStackPtr
+
+				contentRunes := []rune(string(content))
+
+				for i := len(contentRunes) - 1; i >= 0; i-- {
+					if len(saveStack) == treeSaveStackMaxLen {
+						err = ErrTreeSaveStackFull
+						return
+					}
+
+					saveStack = append(saveStack, uint64(contentRunes[i]))
+				}
+
+				*saveStackPtr = saveStack
 			}
 		}
 	case startCommentSectionLexeme:
@@ -817,6 +876,7 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 
 			output = 0
 		}
+	case plaintextLexeme:
 	default:
 		err = ErrLexemeUnrecognized
 	}
@@ -824,13 +884,14 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 	return
 }
 
-func produceTree(input []lexeme) (output *tree, err error) {
-	rootNode := &parentTreeNode{
-		lexeme: startAdditionSectionLexeme,
-	}
+func produceTree(input []token) (output *tree, err error) {
+	rootNode := &parentTreeNode{}
 	parentNodeStack := []*parentTreeNode{
 		rootNode,
 	}
+
+	rootNode.lexeme = startAdditionSectionLexeme
+	rootNode.tree = output
 
 	output = new(tree)
 	output.rootNode = rootNode
@@ -839,21 +900,25 @@ func produceTree(input []lexeme) (output *tree, err error) {
 		output.saveStacks[i] = make([]uint64, 0, treeSaveStackMaxLen)
 	}
 
-	rootNode.tree = output
+	for _, t := range input {
+		defaultNode := defaultTreeNode{
+			lexeme: t.lex,
+			data:   t.data,
+			tree:   output,
+		}
 
-	for _, l := range input {
-		switch l {
+		switch t.lex {
 		case startAdditionSectionLexeme,
 			startSubtractionSectionLexeme,
 			startMultiplicationSectionLexeme,
 			startDivisionSectionLexeme,
 			startJumpIfPositiveSectionLexeme,
 			startJumpIfZeroSectionLexeme,
+			startReadFileSectionLexeme,
 			startCommentSectionLexeme:
 			{
 				nextNode := &parentTreeNode{
-					lexeme: l,
-					tree:   output,
+					defaultTreeNode: defaultNode,
 				}
 
 				if len(parentNodeStack) == 0 {
@@ -872,12 +937,16 @@ func produceTree(input []lexeme) (output *tree, err error) {
 			endDivisionSectionLexeme,
 			endJumpIfPositiveSectionLexeme,
 			endJumpIfZeroSectionLexeme,
+			endReadFileSectionLexeme,
 			endCommentSectionLexeme:
 			{
 				if len(parentNodeStack) == 0 {
 					err = ErrTreeParentNodeUnfound
 					return
 				}
+
+				parentNode := parentNodeStack[len(parentNodeStack)-1]
+				parentNode.data = t.data
 
 				parentNodeStack = parentNodeStack[:len(parentNodeStack)-1]
 			}
@@ -929,6 +998,7 @@ func produceTree(input []lexeme) (output *tree, err error) {
 			invertLexeme,
 			iotaFromZeroLexeme,
 			iotaFromOneLexeme,
+			plaintextLexeme,
 			writeStackToFileLexeme,
 			readStackFromFileLexeme,
 			deleteFileLexeme,
@@ -936,8 +1006,7 @@ func produceTree(input []lexeme) (output *tree, err error) {
 			resetStateLexeme:
 			{
 				nextNode := &terminalTreeNode{
-					lexeme: l,
-					tree:   output,
+					defaultTreeNode: defaultNode,
 				}
 
 				if len(parentNodeStack) == 0 {

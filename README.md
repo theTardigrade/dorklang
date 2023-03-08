@@ -7,7 +7,7 @@ This is an interpreter, written in Go, for **dorklang**, which is an esoteric pr
 After cloning the repository to your local machine, try running one of the example programs with the command below:
 
 ```
-go run .\error.go .\flag.go .\lexeme.go .\main.go .\tree.go "--file=examples/countdown.dork"
+go run ./error.go ./flag.go ./lexeme.go ./main.go ./token.go ./tree.go "--file=examples/countdown.dork"
 ```
 
 ## Storage
@@ -95,6 +95,7 @@ Below is an overview of all the commands that can be used in **dorklang** source
 | `<` ... `>` | Runs any commands between the brackets repeatedly while the **current value** does not equal `0`. |
 | `<<` ... `>>` | Runs any commands between the brackets repeatedly while the **current value** equals `0`. |
 | `{` ... `}` | Ignores all characters and commands between the braces, allowing for human-readable comments. |
+| `{{` ... `}}` | Reads one or more files and pushes their contents onto the **current stack**. The names of the files are given between the braces, separated by whitespace. All commands within the braces are ignored. |
 
 ## Support
 

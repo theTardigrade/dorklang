@@ -20,14 +20,14 @@ const (
 
 type tree struct {
 	rootNode       *parentTreeNode
-	saveStackIndex uint64
-	saveStacks     [2][]uint64
+	saveStackIndex int
+	saveStacks     [2]memoryCellCollection
 }
 
 type treeNode interface {
 	getTree() *tree
 	getData() []byte
-	value(uint64) (uint64, error)
+	value(memoryCell) (memoryCell, error)
 }
 
 type defaultTreeNode struct {
@@ -60,8 +60,8 @@ func (tree *tree) Run() (err error) {
 	return
 }
 
-func (tree *tree) saveStackPtr() (stackPtr *[]uint64, err error) {
-	if tree.saveStackIndex >= uint64(len(tree.saveStacks)) {
+func (tree *tree) saveStackPtr() (stackPtr *memoryCellCollection, err error) {
+	if tree.saveStackIndex >= len(tree.saveStacks) {
 		err = ErrTreeSaveStackIndexInvalid
 		return
 	}
@@ -71,7 +71,7 @@ func (tree *tree) saveStackPtr() (stackPtr *[]uint64, err error) {
 	return
 }
 
-func (tree *tree) saveStack() (stack []uint64, err error) {
+func (tree *tree) saveStack() (stack memoryCellCollection, err error) {
 	stackPtr, err := tree.saveStackPtr()
 	if err != nil {
 		return
@@ -82,7 +82,7 @@ func (tree *tree) saveStack() (stack []uint64, err error) {
 	return
 }
 
-func (node *parentTreeNode) value(input uint64) (output uint64, err error) {
+func (node *parentTreeNode) value(input memoryCell) (output memoryCell, err error) {
 	output = input
 
 	switch node.lexeme {
@@ -113,7 +113,7 @@ func (node *parentTreeNode) value(input uint64) (output uint64, err error) {
 		startMultiplicationSectionLexeme,
 		startDivisionSectionLexeme:
 		{
-			var localOutput uint64
+			var localOutput memoryCell
 
 			for _, node := range node.childNodes {
 				localOutput, err = node.value(localOutput)
@@ -160,7 +160,7 @@ func (node *parentTreeNode) value(input uint64) (output uint64, err error) {
 					return
 				}
 
-				var saveStackPtr *[]uint64
+				var saveStackPtr *memoryCellCollection
 				saveStackPtr, err = tree.saveStackPtr()
 				if err != nil {
 					return
@@ -175,7 +175,7 @@ func (node *parentTreeNode) value(input uint64) (output uint64, err error) {
 						return
 					}
 
-					saveStack = append(saveStack, uint64(contentRunes[i]))
+					saveStack = append(saveStack, memoryCell(contentRunes[i]))
 				}
 
 				*saveStackPtr = saveStack
@@ -189,7 +189,7 @@ func (node *parentTreeNode) value(input uint64) (output uint64, err error) {
 	return
 }
 
-func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
+func (node *terminalTreeNode) value(input memoryCell) (output memoryCell, err error) {
 	output = input
 
 	switch node.lexeme {
@@ -204,7 +204,7 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 				return
 			}
 
-			var saveStackPtr *[]uint64
+			var saveStackPtr *memoryCellCollection
 			saveStackPtr, err = node.tree.saveStackPtr()
 			if err != nil {
 				return
@@ -230,7 +230,7 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 				return
 			}
 
-			var saveStackPtr *[]uint64
+			var saveStackPtr *memoryCellCollection
 			saveStackPtr, err = node.tree.saveStackPtr()
 			if err != nil {
 				return
@@ -242,7 +242,7 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 				return
 			}
 
-			var sum uint64
+			var sum memoryCell
 
 			for i := len(saveStack) - 1; i >= 0; i-- {
 				sum += saveStack[i]
@@ -263,7 +263,7 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 				return
 			}
 
-			var saveStackPtr *[]uint64
+			var saveStackPtr *memoryCellCollection
 			saveStackPtr, err = node.tree.saveStackPtr()
 			if err != nil {
 				return
@@ -289,7 +289,7 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 				return
 			}
 
-			var saveStackPtr *[]uint64
+			var saveStackPtr *memoryCellCollection
 			saveStackPtr, err = node.tree.saveStackPtr()
 			if err != nil {
 				return
@@ -322,7 +322,7 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 				return
 			}
 
-			var saveStackPtr *[]uint64
+			var saveStackPtr *memoryCellCollection
 			saveStackPtr, err = node.tree.saveStackPtr()
 			if err != nil {
 				return
@@ -348,7 +348,7 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 				return
 			}
 
-			var saveStackPtr *[]uint64
+			var saveStackPtr *memoryCellCollection
 			saveStackPtr, err = node.tree.saveStackPtr()
 			if err != nil {
 				return
@@ -381,7 +381,7 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 				return
 			}
 
-			var saveStackPtr *[]uint64
+			var saveStackPtr *memoryCellCollection
 			saveStackPtr, err = node.tree.saveStackPtr()
 			if err != nil {
 				return
@@ -407,7 +407,7 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 				return
 			}
 
-			var saveStackPtr *[]uint64
+			var saveStackPtr *memoryCellCollection
 			saveStackPtr, err = node.tree.saveStackPtr()
 			if err != nil {
 				return
@@ -456,7 +456,7 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 				return
 			}
 
-			var saveStack []uint64
+			var saveStack memoryCellCollection
 			saveStack, err = node.tree.saveStack()
 			if err != nil {
 				return
@@ -485,7 +485,7 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 				return
 			}
 
-			var saveStack []uint64
+			var saveStack memoryCellCollection
 			saveStack, err = node.tree.saveStack()
 			if err != nil {
 				return
@@ -538,7 +538,7 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 				return
 			}
 
-			output = uint64(b[0])
+			output = memoryCell(b[0])
 		}
 	case setRandomMaxLexeme:
 		{
@@ -555,12 +555,12 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 				return
 			}
 
-			output = b.Uint64()
+			output = memoryCell(b.Uint64())
 		}
 	case setSecondTimestampLexeme:
-		output = uint64(time.Now().Unix())
+		output = memoryCell(time.Now().Unix())
 	case setNanosecondTimestampLexeme:
-		output = uint64(time.Now().UnixNano())
+		output = memoryCell(time.Now().UnixNano())
 	case saveStackUseIndexZeroLexeme:
 		if node.tree == nil {
 			err = ErrTreeUnfound
@@ -582,7 +582,7 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 				return
 			}
 
-			var saveStackPtr *[]uint64
+			var saveStackPtr *memoryCellCollection
 			saveStackPtr, err = node.tree.saveStackPtr()
 			if err != nil {
 				return
@@ -603,13 +603,13 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 				return
 			}
 
-			var saveStack []uint64
+			var saveStack memoryCellCollection
 			saveStack, err = node.tree.saveStack()
 			if err != nil {
 				return
 			}
 
-			output = uint64(len(saveStack))
+			output = memoryCell(len(saveStack))
 		}
 	case popStackLastLexeme:
 		{
@@ -618,7 +618,7 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 				return
 			}
 
-			var saveStackPtr *[]uint64
+			var saveStackPtr *memoryCellCollection
 			saveStackPtr, err = node.tree.saveStackPtr()
 			if err != nil {
 				return
@@ -640,7 +640,7 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 				return
 			}
 
-			var saveStackPtr *[]uint64
+			var saveStackPtr *memoryCellCollection
 			saveStackPtr, err = node.tree.saveStackPtr()
 			if err != nil {
 				return
@@ -670,7 +670,7 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 				return
 			}
 
-			var saveStack []uint64
+			var saveStack memoryCellCollection
 			saveStack, err = node.tree.saveStack()
 			if err != nil {
 				return
@@ -685,7 +685,7 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 			}
 
 			content := contentBuilder.Bytes()
-			fileName := strconv.FormatUint(output, 10) + treeSaveFileExtension
+			fileName := strconv.FormatUint(uint64(output), 10) + treeSaveFileExtension
 
 			if err = os.WriteFile(fileName, content, os.ModePerm); err != nil {
 				return
@@ -700,13 +700,13 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 
 			var content []byte
 
-			fileName := strconv.FormatUint(output, 10) + treeSaveFileExtension
+			fileName := strconv.FormatUint(uint64(output), 10) + treeSaveFileExtension
 			content, err = os.ReadFile(fileName)
 			if err != nil {
 				return
 			}
 
-			var saveStackPtr *[]uint64
+			var saveStackPtr *memoryCellCollection
 			saveStackPtr, err = node.tree.saveStackPtr()
 			if err != nil {
 				return
@@ -721,7 +721,7 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 					return
 				}
 
-				saveStack = append(saveStack, uint64(value))
+				saveStack = append(saveStack, memoryCell(value))
 			}
 
 			*saveStackPtr = saveStack
@@ -733,7 +733,7 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 				return
 			}
 
-			var saveStack []uint64
+			var saveStack memoryCellCollection
 			saveStack, err = node.tree.saveStack()
 			if err != nil {
 				return
@@ -749,7 +749,7 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 
 			content := contentBuilder.Bytes()
 
-			output = uint64(hash.Uint8(content))
+			output = memoryCell(hash.Uint8(content))
 		}
 	case hashStackEightByteLexeme:
 		{
@@ -758,7 +758,7 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 				return
 			}
 
-			var saveStack []uint64
+			var saveStack memoryCellCollection
 			saveStack, err = node.tree.saveStack()
 			if err != nil {
 				return
@@ -774,7 +774,7 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 
 			content := contentBuilder.Bytes()
 
-			output = hash.Uint64(content)
+			output = memoryCell(hash.Uint64(content))
 		}
 	case iotaFromZeroLexeme:
 		{
@@ -783,14 +783,14 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 				return
 			}
 
-			var saveStackPtr *[]uint64
+			var saveStackPtr *memoryCellCollection
 			saveStackPtr, err = node.tree.saveStackPtr()
 			if err != nil {
 				return
 			}
 			saveStack := *saveStackPtr
 
-			for i := uint64(0); i < output; i++ {
+			for i := memoryCell(0); i < output; i++ {
 				if len(saveStack) == treeSaveStackMaxLen {
 					err = ErrTreeSaveStackFull
 					return
@@ -808,14 +808,14 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 				return
 			}
 
-			var saveStackPtr *[]uint64
+			var saveStackPtr *memoryCellCollection
 			saveStackPtr, err = node.tree.saveStackPtr()
 			if err != nil {
 				return
 			}
 			saveStack := *saveStackPtr
 
-			for i := uint64(1); i < output; i++ {
+			for i := memoryCell(1); i < output; i++ {
 				if len(saveStack) == treeSaveStackMaxLen {
 					err = ErrTreeSaveStackFull
 					return
@@ -841,7 +841,7 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 				return
 			}
 
-			fileName := strconv.FormatUint(output, 10) + treeSaveFileExtension
+			fileName := strconv.FormatUint(uint64(output), 10) + treeSaveFileExtension
 
 			if err = os.Remove(fileName); err != nil {
 				return
@@ -854,7 +854,7 @@ func (node *terminalTreeNode) value(input uint64) (output uint64, err error) {
 				return
 			}
 
-			var saveStackPtr *[]uint64
+			var saveStackPtr *memoryCellCollection
 			saveStackPtr, err = node.tree.saveStackPtr()
 			if err != nil {
 				return
@@ -897,7 +897,7 @@ func produceTree(input []token) (output *tree, err error) {
 	output.rootNode = rootNode
 
 	for i := range output.saveStacks {
-		output.saveStacks[i] = make([]uint64, 0, treeSaveStackMaxLen)
+		output.saveStacks[i] = make(memoryCellCollection, 0, treeSaveStackMaxLen)
 	}
 
 	for _, t := range input {

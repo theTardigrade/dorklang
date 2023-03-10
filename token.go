@@ -299,16 +299,16 @@ func produceTokens(input []byte) (output []token, err error) {
 					switch lastOutput {
 					case modifierLexeme:
 						output[outputLen-1].lex = shuffleStackLexeme
+					case sortStackAscendingLexeme:
+						l = sortStackDescendingLexeme
 					default:
-						l = sortStackLexeme
+						l = sortStackAscendingLexeme
 					}
 				}
 			case 'x':
-				if len(output) > 0 && output[len(output)-1].lex == modifierLexeme {
-					output[len(output)-1].lex = reverseStackLexeme
-				} else {
-					l = swapStackTopLexeme
-				}
+				l = swapStackTopLexeme
+			case 'r':
+				l = reverseStackLexeme
 			case 'i':
 				if len(output) > 0 && output[len(output)-1].lex == iotaFromZeroLexeme {
 					output[len(output)-1].lex = iotaFromOneLexeme
@@ -539,4 +539,24 @@ func produceTokens(input []byte) (output []token, err error) {
 	}
 
 	return
+}
+
+func cleanTokens(input []token) {
+	for i, t := range input {
+		switch t.lex {
+		case reverseStackLexeme:
+			{
+				if i-1 >= 0 {
+					switch input[i-1].lex {
+					case sortStackAscendingLexeme:
+						input[i-1].lex = sortStackDescendingLexeme
+						input[i].lex = emptyLexeme
+					case reverseStackLexeme:
+						input[i-1].lex = emptyLexeme
+						input[i].lex = emptyLexeme
+					}
+				}
+			}
+		}
+	}
 }

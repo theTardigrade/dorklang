@@ -77,7 +77,8 @@ const (
 	saveStackUseIndexOneLexeme
 	hashStackOneByteLexeme
 	hashStackEightByteLexeme
-	sortStackLexeme
+	sortStackAscendingLexeme
+	sortStackDescendingLexeme
 	shuffleStackLexeme
 	swapStackTopLexeme
 	reverseStackLexeme
@@ -85,6 +86,7 @@ const (
 	invertLexeme
 	modifierLexeme
 	separatorLexeme
+	emptyLexeme // used by cleanTokens to replace unnecessary tokens
 )
 
 func (lexeme lexeme) String() string {
@@ -225,8 +227,10 @@ func (lexeme lexeme) String() string {
 		builder.WriteString("HASH-STACK-ONE-BYTE")
 	case hashStackEightByteLexeme:
 		builder.WriteString("HASH-STACK-EIGHT-BYTE")
-	case sortStackLexeme:
-		builder.WriteString("SORT-STACK")
+	case sortStackAscendingLexeme:
+		builder.WriteString("SORT-STACK-ASC")
+	case sortStackDescendingLexeme:
+		builder.WriteString("SORT-STACK-DESC")
 	case shuffleStackLexeme:
 		builder.WriteString("SHUFFLE-STACK")
 	case swapStackTopLexeme:
@@ -241,6 +245,8 @@ func (lexeme lexeme) String() string {
 		builder.WriteString("PLAINTEXT")
 	case separatorLexeme:
 		builder.WriteString("SEP")
+	case emptyLexeme:
+		builder.WriteString("EMPTY")
 	default:
 		builder.WriteString("UNKNOWN")
 	}

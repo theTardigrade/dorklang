@@ -2,6 +2,7 @@ package main
 
 import (
 	"math/big"
+	"sort"
 	"strconv"
 
 	"golang.org/x/exp/constraints"
@@ -44,4 +45,19 @@ func (collection memoryCellCollection) Swap(i, j int) {
 
 func (collection memoryCellCollection) Less(i, j int) bool {
 	return collection[i] < collection[j]
+}
+
+func (collection memoryCellCollection) SortAscending() {
+	sort.Sort(collection)
+}
+
+func (collection memoryCellCollection) SortDescending() {
+	collection.SortAscending()
+	collection.Reverse()
+}
+
+func (collection memoryCellCollection) Reverse() {
+	for i, j := 0, len(collection)-1; i < j; i, j = i+1, j-1 {
+		collection[i], collection[j] = collection[j], collection[i]
+	}
 }

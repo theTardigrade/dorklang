@@ -7,7 +7,6 @@ import (
 	"math"
 	"math/big"
 	"os"
-	"sort"
 	"time"
 
 	hash "github.com/theTardigrade/golang-hash"
@@ -779,7 +778,7 @@ func (node *terminalTreeNode) value(input memoryCell) (output memoryCell, err er
 
 			output = memoryCellFromIntegerConstraint(hash.Uint64(content))
 		}
-	case sortStackLexeme:
+	case sortStackAscendingLexeme:
 		{
 			if node.tree == nil {
 				err = ErrTreeUnfound
@@ -792,7 +791,22 @@ func (node *terminalTreeNode) value(input memoryCell) (output memoryCell, err er
 				return
 			}
 
-			sort.Sort(saveStack)
+			saveStack.SortAscending()
+		}
+	case sortStackDescendingLexeme:
+		{
+			if node.tree == nil {
+				err = ErrTreeUnfound
+				return
+			}
+
+			var saveStack memoryCellCollection
+			saveStack, err = node.tree.saveStack()
+			if err != nil {
+				return
+			}
+
+			saveStack.SortDescending()
 		}
 	case shuffleStackLexeme:
 		{
@@ -861,9 +875,7 @@ func (node *terminalTreeNode) value(input memoryCell) (output memoryCell, err er
 				return
 			}
 
-			for i, j := 0, len(saveStack)-1; i < j; i, j = i+1, j-1 {
-				saveStack[i], saveStack[j] = saveStack[j], saveStack[i]
-			}
+			saveStack.Reverse()
 		}
 	case iotaFromZeroLexeme:
 		{
@@ -1084,7 +1096,8 @@ func produceTree(input []token) (output *tree, err error) {
 			saveStackUseIndexOneLexeme,
 			hashStackOneByteLexeme,
 			hashStackEightByteLexeme,
-			sortStackLexeme,
+			sortStackAscendingLexeme,
+			sortStackDescendingLexeme,
 			shuffleStackLexeme,
 			swapStackTopLexeme,
 			reverseStackLexeme,
@@ -1112,6 +1125,7 @@ func produceTree(input []token) (output *tree, err error) {
 				nextNode.parentNode = nextParentNode
 			}
 		case separatorLexeme:
+		case emptyLexeme:
 		default:
 			err = ErrLexemeUnrecognized
 			return

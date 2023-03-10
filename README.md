@@ -7,7 +7,7 @@ This is an interpreter, written in Go, for **dorklang**, which is an esoteric pr
 After cloning the repository to your local machine, try running one of the example programs with the command below:
 
 ```
-go run ./error.go ./flag.go ./lexeme.go ./main.go ./memory.go ./token.go ./tree.go "--file=examples/countdown.dork"
+go run ./error.go ./file.go ./flag.go ./lexeme.go ./main.go ./memory.go ./token.go ./tree.go --file=examples/countdown.dork
 ```
 
 ## Storage
@@ -80,10 +80,11 @@ Below is an overview of all the commands that can be used in **dorklang** source
 | `%;` | Sets the **current value** to a value popped from a random position in the **current stack**. |
 | `#` | Pops all the values from the **current stack**, performs an 8-bit hash on them and sets the **current value** to the result. |
 | `##` | Pops all the values from the **current stack**, performs a 64-bit hash on them and sets the **current value** to the result. |
-| `s` | Sorts the **current stack** so that the largest values are at the top and the smallest values are at the bottom. |
+| `s` | Sorts the **current stack** in ascending order, so that the largest values are at the top and the smallest values are at the bottom. |
+| `ss` | Sorts the **current stack** in descending order, so that the largest values are at the bottom and the smallest values are at the top.
 | `%s` | Shuffles the **current stack** so that the values are in a random order. |
 | `x` | Swaps the top two values on the **current stack**, so that the topmost becomes the second-to-topmost (and *vice versa*). |
-| `%x` | Reverses the order of all values in the **current stack**. |
+| `r` | Reverses the order of all values in the **current stack**. |
 | `i` | Pushes an iota-range of values to the **current stack**, from `0` inclusive to the **current value** exclusive. |
 | `ii` | Pushes an iota-range of values to the **current stack**, from `1` inclusive to the **current value** exclusive. |
 | `.` | Saves the **current stack** to a file, using the Unicode/ASCII representation of each value on the stack. The filename is based on the **current value**. |

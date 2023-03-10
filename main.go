@@ -16,6 +16,10 @@ func main() {
 		panic(err)
 	}
 
+	if !*flagIgnoreClean {
+		cleanTokens(tokens)
+	}
+
 	if *flagDebug {
 		for _, t := range tokens {
 			log.Printf("lexeme: %s\n", t.lex)

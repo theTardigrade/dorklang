@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-type lexeme memoryCell
+type lexeme uint64
 
 const (
 	invalidLexeme lexeme = iota

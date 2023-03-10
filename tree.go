@@ -8,7 +8,6 @@ import (
 	"math/big"
 	"os"
 	"sort"
-	"strconv"
 	"time"
 
 	hash "github.com/theTardigrade/golang-hash"
@@ -176,7 +175,7 @@ func (node *parentTreeNode) value(input memoryCell) (output memoryCell, err erro
 						return
 					}
 
-					saveStack = append(saveStack, memoryCell(contentRunes[i]))
+					saveStack = append(saveStack, memoryCellFromIntegerConstraint(contentRunes[i]))
 				}
 
 				*saveStackPtr = saveStack
@@ -539,7 +538,7 @@ func (node *terminalTreeNode) value(input memoryCell) (output memoryCell, err er
 				return
 			}
 
-			output = memoryCell(b[0])
+			output = memoryCellFromIntegerConstraint(b[0])
 		}
 	case setRandomMaxLexeme:
 		{
@@ -556,12 +555,15 @@ func (node *terminalTreeNode) value(input memoryCell) (output memoryCell, err er
 				return
 			}
 
-			output = memoryCell(b.Uint64())
+			output, err = memoryCellFromBigInt(b)
+			if err != nil {
+				return
+			}
 		}
 	case setSecondTimestampLexeme:
-		output = memoryCell(time.Now().Unix())
+		output = memoryCellFromIntegerConstraint(time.Now().Unix())
 	case setNanosecondTimestampLexeme:
-		output = memoryCell(time.Now().UnixNano())
+		output = memoryCellFromIntegerConstraint(time.Now().UnixNano())
 	case saveStackUseIndexZeroLexeme:
 		if node.tree == nil {
 			err = ErrTreeUnfound
@@ -610,7 +612,7 @@ func (node *terminalTreeNode) value(input memoryCell) (output memoryCell, err er
 				return
 			}
 
-			output = memoryCell(len(saveStack))
+			output = memoryCellFromIntegerConstraint(len(saveStack))
 		}
 	case popStackLastLexeme:
 		{
@@ -686,7 +688,7 @@ func (node *terminalTreeNode) value(input memoryCell) (output memoryCell, err er
 			}
 
 			content := contentBuilder.Bytes()
-			fileName := strconv.FormatUint(uint64(output), 10) + treeSaveFileExtension
+			fileName := output.String() + treeSaveFileExtension
 
 			if err = os.WriteFile(fileName, content, os.ModePerm); err != nil {
 				return
@@ -701,7 +703,7 @@ func (node *terminalTreeNode) value(input memoryCell) (output memoryCell, err er
 
 			var content []byte
 
-			fileName := strconv.FormatUint(uint64(output), 10) + treeSaveFileExtension
+			fileName := output.String() + treeSaveFileExtension
 			content, err = os.ReadFile(fileName)
 			if err != nil {
 				return
@@ -722,7 +724,7 @@ func (node *terminalTreeNode) value(input memoryCell) (output memoryCell, err er
 					return
 				}
 
-				saveStack = append(saveStack, memoryCell(value))
+				saveStack = append(saveStack, memoryCellFromIntegerConstraint(value))
 			}
 
 			*saveStackPtr = saveStack
@@ -750,7 +752,7 @@ func (node *terminalTreeNode) value(input memoryCell) (output memoryCell, err er
 
 			content := contentBuilder.Bytes()
 
-			output = memoryCell(hash.Uint8(content))
+			output = memoryCellFromIntegerConstraint(hash.Uint8(content))
 		}
 	case hashStackEightByteLexeme:
 		{
@@ -775,7 +777,7 @@ func (node *terminalTreeNode) value(input memoryCell) (output memoryCell, err er
 
 			content := contentBuilder.Bytes()
 
-			output = memoryCell(hash.Uint64(content))
+			output = memoryCellFromIntegerConstraint(hash.Uint64(content))
 		}
 	case sortStackLexeme:
 		{
@@ -860,7 +862,7 @@ func (node *terminalTreeNode) value(input memoryCell) (output memoryCell, err er
 			}
 			saveStack := *saveStackPtr
 
-			for i := memoryCell(0); i < output; i++ {
+			for i := memoryCellFromIntegerConstraint(0); i < output; i++ {
 				if len(saveStack) == treeSaveStackMaxLen {
 					err = ErrTreeSaveStackFull
 					return
@@ -885,7 +887,7 @@ func (node *terminalTreeNode) value(input memoryCell) (output memoryCell, err er
 			}
 			saveStack := *saveStackPtr
 
-			for i := memoryCell(1); i < output; i++ {
+			for i := memoryCellFromIntegerConstraint(1); i < output; i++ {
 				if len(saveStack) == treeSaveStackMaxLen {
 					err = ErrTreeSaveStackFull
 					return
@@ -911,7 +913,7 @@ func (node *terminalTreeNode) value(input memoryCell) (output memoryCell, err er
 				return
 			}
 
-			fileName := strconv.FormatUint(uint64(output), 10) + treeSaveFileExtension
+			fileName := output.String() + treeSaveFileExtension
 
 			if err = os.Remove(fileName); err != nil {
 				return

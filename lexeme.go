@@ -80,6 +80,7 @@ const (
 	sortStackLexeme
 	shuffleStackLexeme
 	swapStackTopLexeme
+	reverseStackLexeme
 	plaintextLexeme // only used within read-file sections
 	invertLexeme
 	modifierLexeme
@@ -230,6 +231,8 @@ func (lexeme lexeme) String() string {
 		builder.WriteString("SHUFFLE-STACK")
 	case swapStackTopLexeme:
 		builder.WriteString("SWAP-STACK-TOP")
+	case reverseStackLexeme:
+		builder.WriteString("REVERSE-STACK")
 	case invertLexeme:
 		builder.WriteString("INVERT")
 	case modifierLexeme:

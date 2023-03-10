@@ -304,7 +304,11 @@ func produceTokens(input []byte) (output []token, err error) {
 					}
 				}
 			case 'x':
-				l = swapStackTopLexeme
+				if len(output) > 0 && output[len(output)-1].lex == modifierLexeme {
+					output[len(output)-1].lex = reverseStackLexeme
+				} else {
+					l = swapStackTopLexeme
+				}
 			case 'i':
 				if len(output) > 0 && output[len(output)-1].lex == iotaFromZeroLexeme {
 					output[len(output)-1].lex = iotaFromOneLexeme

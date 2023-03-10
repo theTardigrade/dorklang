@@ -71,6 +71,7 @@ Below is an overview of all the commands that can be used in **dorklang** source
 | `@@` | Sets the **current value** to the number of nanoseconds in a UNIX-timestamp representation of the current time. |
 | `%&` | Performs a logical AND operation on the two topmost values in the **current stack**, setting the **current value** to `1` if both values from the stack do not equal `0`, otherwise setting the **current value** to `0`. No values are popped from the **current stack**. |
 | `%&&` | Performs a logical AND operation on all of the values in the **current stack**, setting the **current value** to `1` if all values from the stack do not equal `0`, otherwise setting the **current value** to `0`. No values are popped from the **current stack**. |
+| `\` | Inverts the **current value** as though it were a boolean (i.e. sets the **current value** to `0` if it is not already `0`, otherwise sets it to `1`). |
 | `$` | Uses the first of two stacks when calling further commands that make use of a stack. |
 | `$$` | Uses the second of two stacks when calling further commands that make use of a stack. |
 | `:` | Pushes the **current value** to the end of the **current stack**. |
@@ -82,7 +83,7 @@ Below is an overview of all the commands that can be used in **dorklang** source
 | `s` | Sorts the **current stack** so that the largest values are at the top and the smallest values are at the bottom. |
 | `%s` | Shuffles the **current stack** so that the values are in a random order. |
 | `x` | Swaps the top two values on the **current stack**, so that the topmost becomes the second-to-topmost (and *vice versa*). |
-| `\` | Inverts the **current value** as though it were a boolean (i.e. sets the **current value** to `0` if it is not already `0`, otherwise sets it to `1`). |
+| `%x` | Reverses the order of all values in the **current stack**. |
 | `i` | Pushes an iota-range of values to the **current stack**, from `0` inclusive to the **current value** exclusive. |
 | `ii` | Pushes an iota-range of values to the **current stack**, from `1` inclusive to the **current value** exclusive. |
 | `.` | Saves the **current stack** to a file, using the Unicode/ASCII representation of each value on the stack. The filename is based on the **current value**. |

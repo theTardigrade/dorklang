@@ -298,13 +298,13 @@ func produceTokens(input []byte) (output []token, err error) {
 
 					switch lastOutput {
 					case modifierLexeme:
-						output[outputLen-1].lex = swapStackTopLexeme
-					case sortStackLexeme:
 						output[outputLen-1].lex = shuffleStackLexeme
 					default:
 						l = sortStackLexeme
 					}
 				}
+			case 'x':
+				l = swapStackTopLexeme
 			case 'i':
 				if len(output) > 0 && output[len(output)-1].lex == iotaFromZeroLexeme {
 					output[len(output)-1].lex = iotaFromOneLexeme

@@ -80,8 +80,8 @@ Below is an overview of all the commands that can be used in **dorklang** source
 | `#` | Pops all the values from the **current stack**, performs an 8-bit hash on them and sets the **current value** to the result. |
 | `##` | Pops all the values from the **current stack**, performs a 64-bit hash on them and sets the **current value** to the result. |
 | `s` | Sorts the **current stack** so that the largest values are at the top and the smallest values are at the bottom. |
-| `ss` | Shuffles the **current stack** so that the values are in a random order. |
-| `%s` | Swaps the top two values on the **current stack**, so that the topmost becomes the second-to-topmost (and *vice versa*). |
+| `%s` | Shuffles the **current stack** so that the values are in a random order. |
+| `x` | Swaps the top two values on the **current stack**, so that the topmost becomes the second-to-topmost (and *vice versa*). |
 | `\` | Inverts the **current value** as though it were a boolean (i.e. sets the **current value** to `0` if it is not already `0`, otherwise sets it to `1`). |
 | `i` | Pushes an iota-range of values to the **current stack**, from `0` inclusive to the **current value** exclusive. |
 | `ii` | Pushes an iota-range of values to the **current stack**, from `1` inclusive to the **current value** exclusive. |

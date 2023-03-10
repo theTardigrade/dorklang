@@ -288,10 +288,22 @@ func produceTokens(input []byte) (output []token, err error) {
 			case ',':
 				l = readStackFromFileLexeme
 			case 's':
-				if len(output) > 0 && output[len(output)-1].lex == modifierLexeme {
-					output[len(output)-1].lex = shuffleStackLexeme
-				} else {
-					l = sortStackLexeme
+				{
+					outputLen := len(output)
+					lastOutput := invalidLexeme
+
+					if outputLen > 0 {
+						lastOutput = output[outputLen-1].lex
+					}
+
+					switch lastOutput {
+					case modifierLexeme:
+						output[outputLen-1].lex = swapStackTopLexeme
+					case sortStackLexeme:
+						output[outputLen-1].lex = shuffleStackLexeme
+					default:
+						l = sortStackLexeme
+					}
 				}
 			case 'i':
 				if len(output) > 0 && output[len(output)-1].lex == iotaFromZeroLexeme {

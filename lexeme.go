@@ -9,6 +9,8 @@ type lexeme uint64
 
 const (
 	invalidLexeme lexeme = iota
+	startProgramLexeme
+	endProgramLexeme
 	startAdditionSectionLexeme
 	endAdditionSectionLexeme
 	startSubtractionSectionLexeme
@@ -95,6 +97,10 @@ func (lexeme lexeme) String() string {
 	switch lexeme {
 	case invalidLexeme:
 		builder.WriteString("INVALID")
+	case startProgramLexeme:
+		builder.WriteString("START-PROGRAM")
+	case endProgramLexeme:
+		builder.WriteString("END-PROGRAM")
 	case startAdditionSectionLexeme:
 		builder.WriteString("START-ADD-SECT")
 	case endAdditionSectionLexeme:

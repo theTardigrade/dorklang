@@ -1124,8 +1124,10 @@ func produceTree(input []token) (output *tree, err error) {
 				nextParentNode.childNodes = append(nextParentNode.childNodes, nextNode)
 				nextNode.parentNode = nextParentNode
 			}
-		case separatorLexeme:
-		case emptyLexeme:
+		case startProgramLexeme,
+			endProgramLexeme,
+			separatorLexeme,
+			emptyLexeme:
 		default:
 			err = ErrLexemeUnrecognized
 			return

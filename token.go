@@ -9,9 +9,72 @@ type token struct {
 	data []byte
 }
 
-func produceTokens(input []byte) (output []token, err error) {
-	output = make([]token, 0, len(input))
+type tokenCollection []token
+
+// func (collection tokenCollection) peekToken(i int) (t token, found bool) {
+// 	if i < 0 || i >= len(collection) {
+// 		return
+// 	}
+
+// 	t = collection[i]
+// 	found = true
+
+// 	return
+// }
+
+// func (collection tokenCollection) peekNextToken(i int, ignoreLexemes ...lexeme) (t token, index int, found bool) {
+// 	for j := i + 1; j < len(collection); j++ {
+// 		t = collection[j]
+// 		found = true
+
+// 		for _, l := range ignoreLexemes {
+// 			if t.lex == l {
+// 				found = false
+// 				break
+// 			}
+// 		}
+
+// 		if found {
+// 			index = j
+// 			break
+// 		}
+// 	}
+
+// 	return
+// }
+
+func (collection tokenCollection) peekPrevToken(i int, ignoreLexemes ...lexeme) (t token, index int, found bool) {
+	for j := i - 1; j >= 0; j-- {
+		t = collection[j]
+		found = true
+
+		for _, l := range ignoreLexemes {
+			if t.lex == l {
+				found = false
+				break
+			}
+		}
+
+		if found {
+			index = j
+			break
+		}
+	}
+
+	return
+}
+
+func (collection tokenCollection) peekPrevUsefulToken(i int) (t token, index int, found bool) {
+	t, index, found = collection.peekPrevToken(i, separatorLexeme, emptyLexeme)
+
+	return
+}
+
+func produceTokens(input []byte) (output tokenCollection, err error) {
+	output = make(tokenCollection, 0, len(input)+2)
 	sectionStack := make([]lexeme, 0, len(input)/2+1)
+
+	output = append(output, token{lex: startProgramLexeme})
 
 	for i, r := range input {
 		l := invalidLexeme
@@ -300,7 +363,7 @@ func produceTokens(input []byte) (output []token, err error) {
 					case modifierLexeme:
 						output[outputLen-1].lex = shuffleStackLexeme
 					case sortStackAscendingLexeme:
-						l = sortStackDescendingLexeme
+						output[outputLen-1].lex = sortStackDescendingLexeme
 					default:
 						l = sortStackAscendingLexeme
 					}
@@ -538,37 +601,167 @@ func produceTokens(input []byte) (output []token, err error) {
 		err = ErrNoMatchSectionCharacters
 	}
 
+	output = append(output, token{lex: endProgramLexeme})
+
 	return
 }
 
-func cleanTokens(input []token) {
+func cleanTokens(input tokenCollection) {
 	for i, t := range input {
 		switch t.lex {
 		case reverseStackLexeme:
 			{
-				if i-1 >= 0 {
-					switch input[i-1].lex {
+				t2, i2, found2 := input.peekPrevUsefulToken(i)
+				if found2 {
+					switch t2.lex {
 					case sortStackAscendingLexeme:
-						input[i-1].lex = emptyLexeme
+						input[i2].lex = emptyLexeme
 						input[i].lex = sortStackDescendingLexeme
 					case reverseStackLexeme:
-						input[i-1].lex = emptyLexeme
+						input[i2].lex = emptyLexeme
 						input[i].lex = emptyLexeme
 					}
 				}
 			}
 		case invertLexeme:
 			{
-				if i-1 >= 0 && input[i-1].lex == t.lex && i-2 >= 0 && input[i-2].lex == t.lex {
-					input[i-2].lex = emptyLexeme
-					input[i-1].lex = emptyLexeme
+				t2, i2, found2 := input.peekPrevUsefulToken(i)
+				if found2 && t2.lex == t.lex {
+					t3, i3, found3 := input.peekPrevUsefulToken(i2)
+
+					if found3 && t3.lex == t.lex {
+						input[i3].lex = emptyLexeme
+						input[i2].lex = emptyLexeme
+					}
 				}
 			}
-		case logicalAndStackPairLexeme,
-			logicalAndStackWholeLexeme:
+		case logicalAndStackPairLexeme:
 			{
-				if i-1 >= 0 && input[i-1].lex == t.lex {
-					input[i-1].lex = emptyLexeme
+				t2, i2, found2 := input.peekPrevUsefulToken(i)
+				if found2 && t2.lex == t.lex {
+					input[i2].lex = emptyLexeme
+				}
+			}
+		case logicalAndStackWholeLexeme:
+			{
+				t2, i2, found2 := input.peekPrevUsefulToken(i)
+				if found2 {
+					switch t2.lex {
+					case logicalAndStackPairLexeme,
+						logicalAndStackWholeLexeme:
+						input[i2].lex = emptyLexeme
+					}
+				}
+			}
+		case addOneLexeme:
+			{
+				indices := []int{i}
+				foundAll := true
+
+				for j := 0; j < 7; j++ {
+					t2, i2, found2 := input.peekPrevUsefulToken(indices[len(indices)-1])
+					if found2 && t2.lex == t.lex {
+						indices = append(indices, i2)
+					} else {
+						foundAll = false
+						break
+					}
+				}
+
+				if foundAll {
+					for i := 1; i < len(indices); i++ {
+						i2 := indices[i]
+						input[i2].lex = emptyLexeme
+					}
+
+					input[i].lex = addEightLexeme
+				}
+			}
+		case subtractOneLexeme:
+			{
+				indices := []int{i}
+				foundAll := true
+
+				for j := 0; j < 7; j++ {
+					t2, i2, found2 := input.peekPrevUsefulToken(indices[len(indices)-1])
+					if found2 && t2.lex == t.lex {
+						indices = append(indices, i2)
+					} else {
+						foundAll = false
+						break
+					}
+				}
+
+				if foundAll {
+					for i := 1; i < len(indices); i++ {
+						i2 := indices[i]
+						input[i2].lex = emptyLexeme
+					}
+
+					input[i].lex = subtractEightLexeme
+				}
+			}
+		case multiplyTwoLexeme:
+			{
+				indices := []int{i}
+				foundAll := true
+
+				for j := 0; j < 2; j++ {
+					t2, i2, found2 := input.peekPrevUsefulToken(indices[len(indices)-1])
+					if found2 && t2.lex == t.lex {
+						indices = append(indices, i2)
+					} else {
+						foundAll = false
+						break
+					}
+				}
+
+				if foundAll {
+					for i := 1; i < len(indices); i++ {
+						i2 := indices[i]
+						input[i2].lex = emptyLexeme
+					}
+
+					input[i].lex = multiplyEightLexeme
+				}
+			}
+		case divideTwoLexeme:
+			{
+				indices := []int{i}
+				foundAll := true
+
+				for j := 0; j < 2; j++ {
+					t2, i2, found2 := input.peekPrevUsefulToken(indices[len(indices)-1])
+					if found2 && t2.lex == t.lex {
+						indices = append(indices, i2)
+					} else {
+						foundAll = false
+						break
+					}
+				}
+
+				if foundAll {
+					for i := 1; i < len(indices); i++ {
+						i2 := indices[i]
+						input[i2].lex = emptyLexeme
+					}
+
+					input[i].lex = divideEightLexeme
+				}
+			}
+		case shuffleStackLexeme,
+			sortStackAscendingLexeme,
+			sortStackDescendingLexeme:
+			{
+				t2, i2, found2 := input.peekPrevUsefulToken(i)
+				if found2 {
+					switch t2.lex {
+					case shuffleStackLexeme,
+						sortStackAscendingLexeme,
+						sortStackDescendingLexeme,
+						reverseStackLexeme:
+						input[i2].lex = emptyLexeme
+					}
 				}
 			}
 		}

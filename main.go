@@ -16,7 +16,7 @@ func main() {
 		panic(err)
 	}
 
-	if !*flagIgnoreClean {
+	if !*flagSkipClean {
 		cleanTokens(tokens)
 	}
 

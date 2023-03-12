@@ -549,12 +549,26 @@ func cleanTokens(input []token) {
 				if i-1 >= 0 {
 					switch input[i-1].lex {
 					case sortStackAscendingLexeme:
-						input[i-1].lex = sortStackDescendingLexeme
-						input[i].lex = emptyLexeme
+						input[i-1].lex = emptyLexeme
+						input[i].lex = sortStackDescendingLexeme
 					case reverseStackLexeme:
 						input[i-1].lex = emptyLexeme
 						input[i].lex = emptyLexeme
 					}
+				}
+			}
+		case invertLexeme:
+			{
+				if i-1 >= 0 && input[i-1].lex == t.lex && i-2 >= 0 && input[i-2].lex == t.lex {
+					input[i-2].lex = emptyLexeme
+					input[i-1].lex = emptyLexeme
+				}
+			}
+		case logicalAndStackPairLexeme,
+			logicalAndStackWholeLexeme:
+			{
+				if i-1 >= 0 && input[i-1].lex == t.lex {
+					input[i-1].lex = emptyLexeme
 				}
 			}
 		}

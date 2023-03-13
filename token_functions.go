@@ -611,6 +611,14 @@ func cleanTokens(input tokenCollection) {
 					input[i].lex = addEightLexeme
 				}
 			}
+		case addEightLexeme:
+			{
+				t2, i2, found2 := input.peekPrevUsefulToken(i)
+				if found2 && t2.lex == setZeroLexeme {
+					input[i].lex = setOneByteLexeme
+					input[i2].lex = emptyLexeme
+				}
+			}
 		case subtractOneLexeme:
 			{
 				indices := []int{i}

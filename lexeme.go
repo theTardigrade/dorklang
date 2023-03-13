@@ -82,6 +82,6 @@ const (
 	plaintextLexeme // only used within read-file sections
 	invertLexeme
 	modifierLexeme
-	separatorLexeme
-	emptyLexeme // used by cleanTokens to replace unnecessary tokens
+	separatorLexeme // used for whitespace
+	emptyLexeme     // used by cleanTokens to replace unnecessary tokens
 )

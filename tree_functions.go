@@ -1,6 +1,6 @@
 package main
 
-func produceTree(input []token) (output *tree, err error) {
+func produceTree(input tokenCollection) (output *tree, err error) {
 	rootNode := &parentTreeNode{}
 	parentNodeStack := []*parentTreeNode{
 		rootNode,

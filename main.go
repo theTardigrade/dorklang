@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	fileContents, err := os.ReadFile(*fileFlag)
+	fileContents, err := os.ReadFile(*flagFile)
 	if err != nil {
 		panic(err)
 	}
@@ -31,7 +31,11 @@ func main() {
 		panic(err)
 	}
 
-	if err = tree.Run(); err != nil {
+	if output, err := tree.Run(); err != nil {
 		panic(err)
+	} else if output <= 124 {
+		os.Exit(int(output))
+	} else {
+		os.Exit(125)
 	}
 }

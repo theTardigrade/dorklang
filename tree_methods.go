@@ -12,8 +12,8 @@ import (
 	hash "github.com/theTardigrade/golang-hash"
 )
 
-func (tree *tree) Run() (err error) {
-	_, err = tree.rootNode.value(0)
+func (tree *tree) Run() (output memoryCell, err error) {
+	output, err = tree.rootNode.value(0)
 
 	return
 }

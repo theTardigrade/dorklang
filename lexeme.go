@@ -1,4 +1,4 @@
-package main
+package dorklang
 
 type lexeme uint64
 

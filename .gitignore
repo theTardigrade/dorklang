@@ -2,3 +2,4 @@
 *.dork
 *.dork.txt
 !/examples/*.dork
+/html

@@ -4,10 +4,11 @@ This is an interpreter, written in Go, for **dorklang**, which is an esoteric pr
 
 ## Examples
 
-After cloning the repository to your local machine, try running one of the example programs with the command below:
+After cloning the repository to your local machine, try running one of the example programs with the commands below:
 
 ```
-go run ./error.go ./file.go ./flag.go ./lexeme_methods.go ./lexeme.go ./main.go ./memory_functions.go ./memory_methods.go ./memory.go ./token_functions.go ./token_methods.go ./token.go ./tree_functions.go ./tree_methods.go ./tree.go --file=examples/countdown.dork
+cd interpreter
+go run ./file.go ./flag.go ./main.go --file=../examples/countdown.dork
 ```
 
 ## Storage

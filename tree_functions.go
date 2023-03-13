@@ -1,4 +1,4 @@
-package main
+package dorklang
 
 func produceTree(input tokenCollection) (output *tree, err error) {
 	rootNode := &parentTreeNode{}

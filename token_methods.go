@@ -1,4 +1,4 @@
-package main
+package dorklang
 
 // func (collection tokenCollection) peekToken(i int) (t token, found bool) {
 // 	if i < 0 || i >= len(collection) {

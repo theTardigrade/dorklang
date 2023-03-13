@@ -1,4 +1,4 @@
-package main
+package dorklang
 
 const (
 	treeSaveFileExtension = ".dork.txt"

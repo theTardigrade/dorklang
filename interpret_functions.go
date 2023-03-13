@@ -33,3 +33,9 @@ func InterpretCode(input []byte, options InterpretCodeOptions) (output uint64, e
 
 	return
 }
+
+func InterpretCodeWithDefaultOptions(input []byte) (output uint64, err error) {
+	output, err = InterpretCode(input, InterpretCodeDefaultOptions)
+
+	return
+}

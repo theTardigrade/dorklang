@@ -83,6 +83,7 @@ const (
 	filePathLexeme
 	invertLexeme
 	modifierLexeme
+	changeDirLexeme
 	separatorLexeme // used for whitespace
 	emptyLexeme     // used by cleanTokens to replace unnecessary tokens
 	parentLexeme    // used by cleanTokens to hold a child tokenCollection

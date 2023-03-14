@@ -1,6 +1,7 @@
 package dorklang
 
 import (
+	"bytes"
 	"os"
 	"path/filepath"
 	"unicode"
@@ -740,7 +741,9 @@ func cleanTokens(input tokenCollection) (err error) {
 					return
 				}
 
-				err = os.Chdir(filepath.Dir(fileAbsPath))
+				fileDir := filepath.Dir(fileAbsPath)
+
+				err = os.Chdir(fileDir)
 				if err != nil {
 					return
 				}
@@ -767,6 +770,13 @@ func cleanTokens(input tokenCollection) (err error) {
 
 					input[i].lex = parentLexeme
 					input[i].childCollection = childTokenCollection
+					input[i].data = bytes.Join(
+						[][]byte{
+							[]byte(fileDir),
+							[]byte(initialDir),
+						},
+						[]byte{0},
+					)
 				}
 			}
 		}

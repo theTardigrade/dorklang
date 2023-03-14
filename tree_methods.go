@@ -38,11 +38,42 @@ func (tr *tree) addNode(t token, parentNodeStack *[]*parentTreeNode) (err error)
 		}
 	case parentLexeme:
 		{
+			dirs := bytes.Split(t.data, []byte{0})
+			nextDir := dirs[0]
+			initialDir := dirs[1]
+
+			nextNode := &terminalTreeNode{
+				defaultTreeNode: defaultTreeNode{
+					lexeme: changeDirLexeme,
+					data:   nextDir,
+				},
+			}
+
+			if len(*parentNodeStack) == 0 {
+				err = ErrTreeParentNodeUnfound
+				return
+			}
+
+			nextParentNode := (*parentNodeStack)[len(*parentNodeStack)-1]
+			nextParentNode.childNodes = append(nextParentNode.childNodes, nextNode)
+			nextNode.parentNode = nextParentNode
+
 			for _, t2 := range t.childCollection {
 				if err = tr.addNode(t2, parentNodeStack); err != nil {
 					return
 				}
 			}
+
+			nextNode = &terminalTreeNode{
+				defaultTreeNode: defaultTreeNode{
+					lexeme: changeDirLexeme,
+					data:   initialDir,
+				},
+			}
+
+			nextParentNode = (*parentNodeStack)[len(*parentNodeStack)-1]
+			nextParentNode.childNodes = append(nextParentNode.childNodes, nextNode)
+			nextNode.parentNode = nextParentNode
 		}
 	case startProgramLexeme,
 		endProgramLexeme,
@@ -1199,7 +1230,12 @@ func (node *terminalTreeNode) value(input memoryCell) (output memoryCell, err er
 				}
 			}
 		}
-
+	case changeDirLexeme:
+		{
+			if err = os.Chdir(string(node.data)); err != nil {
+				return
+			}
+		}
 	default:
 		err = ErrLexemeUnrecognized
 	}

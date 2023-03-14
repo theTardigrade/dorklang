@@ -8,7 +8,7 @@ After cloning the repository to your local machine, try running one of the examp
 
 ```
 cd interpreter
-go run ./file.go ./flag.go ./main.go --file=../examples/countdown.dork
+go run ./flag.go ./main.go --file=../examples/countdown.dork
 ```
 
 ## Storage

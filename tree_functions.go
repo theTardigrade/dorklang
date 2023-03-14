@@ -1,23 +1,22 @@
 package dorklang
 
-import "io"
-
-func produceTree(input tokenCollection, reader io.Reader, writer io.Writer) (output *tree, err error) {
+func produceTree(input tokenCollection, interpretCodeOptions InterpretCodeOptions) (output *tree, err error) {
 	rootNode := &parentTreeNode{}
 	parentNodeStack := []*parentTreeNode{
 		rootNode,
 	}
 
-	rootNode.lexeme = startAdditionSectionLexeme
+	rootNode.lexeme = startProgramLexeme
 	rootNode.tree = output
 
 	output = new(tree)
 	output.rootNode = rootNode
-	output.reader = reader
-	output.writer = writer
+	output.interpretCodeOptions = interpretCodeOptions
 
-	for i := range output.saveStacks {
-		output.saveStacks[i] = make(memoryCellCollection, 0, treeSaveStackMaxLen)
+	for i := range interpretCodeOptions.saveStacks {
+		if interpretCodeOptions.saveStacks[i] == nil {
+			interpretCodeOptions.saveStacks[i] = make(memoryCellCollection, 0, interpretCodeOptionsSaveStackMaxLen)
+		}
 	}
 
 	for _, t := range input {

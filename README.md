@@ -101,7 +101,7 @@ Below is an overview of all the commands that can be used in **dorklang** source
 | `<` ... `>` | Runs any commands between the brackets repeatedly while the **current value** does not equal `0`. |
 | `<<` ... `>>` | Runs any commands between the brackets repeatedly while the **current value** equals `0`. |
 | `{` ... `}` | Ignores all characters and commands between the braces, allowing for human-readable comments. |
-| `{{` ... `}}` | Reads one or more files. The names of the files are given between the braces, separated by whitespace. If a file has a `.dork` extension, the commands it contains are run by the interpreter, but if a file has any other extension, the contents of the file is pushed onto the **current stack**. All commands within the braces are ignored. |
+| `{{` ... `}}` | Reads one or more files. The names of the files are given between the braces, separated by whitespace. If a file has a `.dork` extension, the commands it contains are run by the interpreter, but if a file has any other extension, the contents of the file are pushed onto the **current stack**. All commands within the braces are ignored. |
 
 ## Support
 

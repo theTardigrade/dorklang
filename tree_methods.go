@@ -615,20 +615,33 @@ func (node *terminalTreeNode) value(input memoryCell) (output memoryCell, err er
 		output = memoryCellFromIntegerConstraint(time.Now().Unix())
 	case setNanosecondTimestampLexeme:
 		output = memoryCellFromIntegerConstraint(time.Now().UnixNano())
-	case saveStackUseIndexZeroLexeme:
+	case useStackIndexZeroLexeme:
 		if node.tree == nil {
 			err = ErrTreeUnfound
 			return
 		}
 
 		node.tree.interpretCodeOptions.saveStackIndex = 0
-	case saveStackUseIndexOneLexeme:
+	case useStackIndexOneLexeme:
 		if node.tree == nil {
 			err = ErrTreeUnfound
 			return
 		}
 
 		node.tree.interpretCodeOptions.saveStackIndex = 1
+	case useStackIndexSwappedLexeme:
+		{
+			if node.tree == nil {
+				err = ErrTreeUnfound
+				return
+			}
+
+			if node.tree.interpretCodeOptions.saveStackIndex == 0 {
+				node.tree.interpretCodeOptions.saveStackIndex = 1
+			} else {
+				node.tree.interpretCodeOptions.saveStackIndex = 0
+			}
+		}
 	case pushStackLexeme:
 		{
 			if node.tree == nil {

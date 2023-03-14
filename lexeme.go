@@ -70,8 +70,9 @@ const (
 	countStackLexeme
 	popStackLastLexeme
 	popStackRandomLexeme
-	saveStackUseIndexZeroLexeme
-	saveStackUseIndexOneLexeme
+	useStackIndexZeroLexeme
+	useStackIndexOneLexeme
+	useStackIndexSwappedLexeme
 	hashStackOneByteLexeme
 	hashStackEightByteLexeme
 	sortStackAscendingLexeme

@@ -75,6 +75,7 @@ Below is an overview of all the commands that can be used in **dorklang** source
 | `\` | Inverts the **current value** as though it were a boolean (i.e. sets the **current value** to `0` if it is not already `0`, otherwise sets it to `1`). |
 | `$` | Uses the first of two stacks when calling further commands that make use of a stack. |
 | `$$` | Uses the second of two stacks when calling further commands that make use of a stack. |
+| `%$` | Uses the currently unused one of two stacks when calling further commands that make use of a stack. |
 | `:` | Pushes the **current value** to the end of the **current stack**. |
 | `%:` | Sets the **current value** to the number of values stored in the **current stack**. |
 | `;` | Sets the **current value** to a value popped from the end of the **current stack**. |

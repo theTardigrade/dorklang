@@ -239,10 +239,22 @@ func produceTokens(input []byte) (output tokenCollection, err error) {
 					l = setSecondTimestampLexeme
 				}
 			case '$':
-				if len(output) > 0 && output[len(output)-1].lex == saveStackUseIndexZeroLexeme {
-					output[len(output)-1].lex = saveStackUseIndexOneLexeme
-				} else {
-					l = saveStackUseIndexZeroLexeme
+				{
+					outputLen := len(output)
+					lastOutput := invalidLexeme
+
+					if outputLen > 0 {
+						lastOutput = output[outputLen-1].lex
+					}
+
+					switch lastOutput {
+					case modifierLexeme:
+						output[outputLen-1].lex = useStackIndexSwappedLexeme
+					case useStackIndexZeroLexeme:
+						output[outputLen-1].lex = useStackIndexOneLexeme
+					default:
+						l = useStackIndexZeroLexeme
+					}
 				}
 			case ':':
 				if len(output) > 0 && output[len(output)-1].lex == modifierLexeme {

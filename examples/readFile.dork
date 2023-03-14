@@ -2,14 +2,12 @@
 
 {
                         NOTE
-    The other file will be read relative to the directory
-    of the current file.
+    Other file paths are always relative to the directory
+    of the current file, unless an absolute file path is
+    given.
 }
 
 $
 {{ readFileText.txt }}
-%:
-<-$$:
-    $;!
-$$;>
+{{ mixins/printCurrentStack.dork }}
 ~

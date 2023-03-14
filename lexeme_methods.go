@@ -139,10 +139,12 @@ func (lexeme lexeme) String() string {
 		builder.WriteString("POP-STACK-LAST")
 	case popStackRandomLexeme:
 		builder.WriteString("POP-STACK-RAND")
-	case saveStackUseIndexZeroLexeme:
+	case useStackIndexZeroLexeme:
 		builder.WriteString("USE-STACK-ZERO")
-	case saveStackUseIndexOneLexeme:
+	case useStackIndexOneLexeme:
 		builder.WriteString("USE-STACK-ONE")
+	case useStackIndexSwappedLexeme:
+		builder.WriteString("USE-STACK-SWAPPED")
 	case hashStackOneByteLexeme:
 		builder.WriteString("HASH-STACK-ONE-BYTE")
 	case hashStackEightByteLexeme:

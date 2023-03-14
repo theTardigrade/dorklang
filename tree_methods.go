@@ -13,6 +13,162 @@ import (
 	hash "github.com/theTardigrade/golang-hash"
 )
 
+func (tr *tree) addNode(t token, parentNodeStack *[]*parentTreeNode) (err error) {
+	handled := true
+
+	switch t.lex {
+	case endAdditionSectionLexeme,
+		endSubtractionSectionLexeme,
+		endMultiplicationSectionLexeme,
+		endDivisionSectionLexeme,
+		endJumpIfPositiveSectionLexeme,
+		endJumpIfZeroSectionLexeme,
+		endReadFileSectionLexeme,
+		endCommentSectionLexeme:
+		{
+			if len(*parentNodeStack) == 0 {
+				err = ErrTreeParentNodeUnfound
+				return
+			}
+
+			parentNode := (*parentNodeStack)[len(*parentNodeStack)-1]
+			parentNode.data = t.data
+
+			*parentNodeStack = (*parentNodeStack)[:len(*parentNodeStack)-1]
+		}
+	case parentLexeme:
+		{
+			for _, t2 := range t.childCollection {
+				if err = tr.addNode(t2, parentNodeStack); err != nil {
+					return
+				}
+			}
+		}
+	case startProgramLexeme,
+		endProgramLexeme,
+		separatorLexeme,
+		emptyLexeme:
+	default:
+		handled = false
+	}
+
+	if handled {
+		return
+	}
+
+	defaultNode := defaultTreeNode{
+		lexeme: t.lex,
+		data:   t.data,
+		tree:   tr,
+	}
+
+	switch t.lex {
+	case startAdditionSectionLexeme,
+		startSubtractionSectionLexeme,
+		startMultiplicationSectionLexeme,
+		startDivisionSectionLexeme,
+		startJumpIfPositiveSectionLexeme,
+		startJumpIfZeroSectionLexeme,
+		startReadFileSectionLexeme,
+		startCommentSectionLexeme:
+		{
+			nextNode := &parentTreeNode{
+				defaultTreeNode: defaultNode,
+			}
+
+			if len(*parentNodeStack) == 0 {
+				err = ErrTreeParentNodeUnfound
+				return
+			}
+
+			nextParentNode := (*parentNodeStack)[len(*parentNodeStack)-1]
+			nextParentNode.childNodes = append(nextParentNode.childNodes, nextNode)
+
+			*parentNodeStack = append(*parentNodeStack, nextNode)
+		}
+	case addOneLexeme,
+		addEightLexeme,
+		addStackPairLexeme,
+		addStackWholeLexeme,
+		subtractOneLexeme,
+		subtractEightLexeme,
+		subtractStackPairLexeme,
+		subtractStackWholeLexeme,
+		multiplyTwoLexeme,
+		multiplyEightLexeme,
+		multiplyStackPairLexeme,
+		multiplyStackWholeLexeme,
+		divideTwoLexeme,
+		divideEightLexeme,
+		divideStackPairLexeme,
+		divideStackWholeLexeme,
+		squareLexeme,
+		cubeLexeme,
+		setZeroLexeme,
+		setOneByteLexeme,
+		setEightByteLexeme,
+		setOneKibibyteLexeme,
+		setEightKibibyteLexeme,
+		setOneMebibyteLexeme,
+		setEightMebibyteLexeme,
+		setOneGibibyteLexeme,
+		setEightGibibyteLexeme,
+		setRandomByteLexeme,
+		setRandomMaxLexeme,
+		setSecondTimestampLexeme,
+		setNanosecondTimestampLexeme,
+		printCharacterLexeme,
+		printNumberLexeme,
+		inputCharacterLexeme,
+		inputNumberLexeme,
+		logicalAndStackPairLexeme,
+		logicalAndStackWholeLexeme,
+		pushStackLexeme,
+		countStackLexeme,
+		popStackLastLexeme,
+		popStackRandomLexeme,
+		useStackIndexZeroLexeme,
+		useStackIndexOneLexeme,
+		useStackIndexSwappedLexeme,
+		hashStackOneByteLexeme,
+		hashStackEightByteLexeme,
+		sortStackAscendingLexeme,
+		sortStackDescendingLexeme,
+		shuffleStackLexeme,
+		swapStackTopLexeme,
+		reverseStackLexeme,
+		invertLexeme,
+		iotaFromZeroLexeme,
+		iotaFromOneLexeme,
+		filePathLexeme,
+		writeStackToFileLexeme,
+		readStackFromFileLexeme,
+		deleteFileLexeme,
+		clearStackLexeme,
+		resetStateLexeme:
+		{
+			nextNode := &terminalTreeNode{
+				defaultTreeNode: defaultNode,
+			}
+
+			if len(*parentNodeStack) == 0 {
+				err = ErrTreeParentNodeUnfound
+				return
+			}
+
+			nextParentNode := (*parentNodeStack)[len(*parentNodeStack)-1]
+			nextParentNode.childNodes = append(nextParentNode.childNodes, nextNode)
+			nextNode.parentNode = nextParentNode
+		}
+
+	default:
+		err = ErrLexemeUnrecognized
+		return
+	}
+
+	return
+}
+
 func (tree *tree) Run() (output memoryCell, err error) {
 	initialDir, err := os.Getwd()
 	if err != nil {
@@ -59,6 +215,10 @@ func (tree *tree) saveStack() (stack memoryCellCollection, err error) {
 	return
 }
 
+func (node defaultTreeNode) getLexeme() lexeme {
+	return node.lexeme
+}
+
 func (node defaultTreeNode) getTree() *tree {
 	return node.tree
 }
@@ -74,8 +234,8 @@ func (node *parentTreeNode) value(input memoryCell) (output memoryCell, err erro
 	case startJumpIfPositiveSectionLexeme:
 		{
 			for output > 0 {
-				for _, node := range node.childNodes {
-					output, err = node.value(output)
+				for _, node2 := range node.childNodes {
+					output, err = node2.value(output)
 					if err != nil {
 						return
 					}
@@ -85,18 +245,19 @@ func (node *parentTreeNode) value(input memoryCell) (output memoryCell, err erro
 	case startJumpIfZeroSectionLexeme:
 		{
 			for output == 0 {
-				for _, node := range node.childNodes {
-					output, err = node.value(output)
+				for _, node2 := range node.childNodes {
+					output, err = node2.value(output)
 					if err != nil {
 						return
 					}
 				}
 			}
 		}
-	case startProgramLexeme:
+	case startProgramLexeme,
+		startReadFileSectionLexeme:
 		{
-			for _, node := range node.childNodes {
-				output, err = node.value(output)
+			for _, node2 := range node.childNodes {
+				output, err = node2.value(output)
 				if err != nil {
 					return
 				}
@@ -109,8 +270,8 @@ func (node *parentTreeNode) value(input memoryCell) (output memoryCell, err erro
 		{
 			var localOutput memoryCell
 
-			for _, node := range node.childNodes {
-				localOutput, err = node.value(localOutput)
+			for _, node2 := range node.childNodes {
+				localOutput, err = node2.value(localOutput)
 				if err != nil {
 					return
 				}
@@ -128,80 +289,6 @@ func (node *parentTreeNode) value(input memoryCell) (output memoryCell, err erro
 			default:
 				err = ErrLexemeUnrecognized
 				return
-			}
-		}
-	case startReadFileSectionLexeme:
-		{
-			for _, node := range node.childNodes {
-				data := node.getData()
-
-				if len(data) == 0 {
-					continue
-				}
-
-				tree := node.getTree()
-
-				if tree == nil {
-					err = ErrTreeUnfound
-					return
-				}
-
-				filePath := string(data)
-
-				var fileAbsPath string
-				fileAbsPath, err = filepath.Abs(filePath)
-				if err != nil {
-					return
-				}
-
-				var content []byte
-				content, err = os.ReadFile(fileAbsPath)
-				if err != nil {
-					return
-				}
-
-				fileExt := filepath.Ext(filePath)
-
-				switch fileExt {
-				case FileExtensionForCode:
-					{
-						interpretCodeOptionsCloned := tree.interpretCodeOptions.Clone()
-
-						interpretCodeOptionsCloned.WorkingDir = filepath.Dir(fileAbsPath)
-						interpretCodeOptionsCloned.initialCurrentValue = output
-
-						var outputUint64 uint64
-
-						outputUint64, err = InterpretCode(content, interpretCodeOptionsCloned)
-						if err != nil {
-							return
-						}
-
-						output = memoryCellFromIntegerConstraint(outputUint64)
-					}
-				default:
-					{
-						var saveStackPtr *memoryCellCollection
-						saveStackPtr, err = tree.saveStackPtr()
-						if err != nil {
-							return
-						}
-						saveStack := *saveStackPtr
-
-						contentRunes := []rune(string(content))
-
-						for i := len(contentRunes) - 1; i >= 0; i-- {
-							if len(saveStack) >= interpretCodeOptionsSaveStackMaxLen {
-								err = ErrTreeSaveStackFull
-								return
-							}
-
-							saveStack = append(saveStack, memoryCellFromIntegerConstraint(contentRunes[i]))
-						}
-
-						*saveStackPtr = saveStack
-					}
-				}
 			}
 		}
 	case startCommentSectionLexeme:
@@ -1043,7 +1130,76 @@ func (node *terminalTreeNode) value(input memoryCell) (output memoryCell, err er
 
 			output = 0
 		}
-	case plaintextLexeme:
+	case filePathLexeme:
+		{
+			if len(node.data) == 0 {
+				return
+			}
+
+			if node.tree == nil {
+				err = ErrTreeUnfound
+				return
+			}
+
+			tree := node.tree
+			filePath := string(node.data)
+
+			var fileAbsPath string
+			fileAbsPath, err = filepath.Abs(filePath)
+			if err != nil {
+				return
+			}
+
+			var content []byte
+			content, err = os.ReadFile(fileAbsPath)
+			if err != nil {
+				return
+			}
+
+			fileExt := filepath.Ext(filePath)
+
+			switch fileExt {
+			case FileExtensionForCode:
+				{
+					interpretCodeOptionsCloned := tree.interpretCodeOptions.Clone()
+
+					interpretCodeOptionsCloned.WorkingDir = filepath.Dir(fileAbsPath)
+					interpretCodeOptionsCloned.initialCurrentValue = output
+
+					var outputUint64 uint64
+
+					outputUint64, err = InterpretCode(content, interpretCodeOptionsCloned)
+					if err != nil {
+						return
+					}
+
+					output = memoryCellFromIntegerConstraint(outputUint64)
+				}
+			default:
+				{
+					var saveStackPtr *memoryCellCollection
+					saveStackPtr, err = tree.saveStackPtr()
+					if err != nil {
+						return
+					}
+					saveStack := *saveStackPtr
+
+					contentRunes := []rune(string(content))
+
+					for i := len(contentRunes) - 1; i >= 0; i-- {
+						if len(saveStack) >= interpretCodeOptionsSaveStackMaxLen {
+							err = ErrTreeSaveStackFull
+							return
+						}
+
+						saveStack = append(saveStack, memoryCellFromIntegerConstraint(contentRunes[i]))
+					}
+
+					*saveStackPtr = saveStack
+				}
+			}
+		}
+
 	default:
 		err = ErrLexemeUnrecognized
 	}

@@ -1,6 +1,8 @@
 package dorklang
 
 import (
+	"os"
+	"path/filepath"
 	"unicode"
 )
 
@@ -73,12 +75,12 @@ func produceTokens(input []byte) (output tokenCollection, err error) {
 					}
 
 					if !handled {
-						if len(output) == 0 || output[len(output)-1].lex != plaintextLexeme {
-							l = plaintextLexeme
+						if len(output) == 0 || output[len(output)-1].lex != filePathLexeme {
+							l = filePathLexeme
 							d = append(d, r)
 						}
 
-						if len(output) != 0 && output[len(output)-1].lex == plaintextLexeme {
+						if len(output) != 0 && output[len(output)-1].lex == filePathLexeme {
 							output[len(output)-1].data = append(output[len(output)-1].data, r)
 						}
 					}
@@ -552,7 +554,7 @@ func produceTokens(input []byte) (output tokenCollection, err error) {
 	return
 }
 
-func cleanTokens(input tokenCollection) {
+func cleanTokens(input tokenCollection) (err error) {
 	for i, t := range input {
 		switch t.lex {
 		case reverseStackLexeme:
@@ -718,6 +720,57 @@ func cleanTokens(input tokenCollection) {
 					}
 				}
 			}
+		case filePathLexeme:
+			{
+				if len(t.data) == 0 {
+					break
+				}
+
+				filePath := string(t.data)
+
+				var fileAbsPath string
+				fileAbsPath, err = filepath.Abs(filePath)
+				if err != nil {
+					return
+				}
+
+				var initialDir string
+				initialDir, err = os.Getwd()
+				if err != nil {
+					return
+				}
+
+				err = os.Chdir(filepath.Dir(fileAbsPath))
+				if err != nil {
+					return
+				}
+
+				var content []byte
+				content, err = os.ReadFile(fileAbsPath)
+				if err != nil {
+					return
+				}
+
+				err = os.Chdir(initialDir)
+				if err != nil {
+					return
+				}
+
+				fileExt := filepath.Ext(filePath)
+
+				if fileExt == FileExtensionForCode {
+					var childTokenCollection tokenCollection
+					childTokenCollection, err = produceTokens(content)
+					if err != nil {
+						return
+					}
+
+					input[i].lex = parentLexeme
+					input[i].childCollection = childTokenCollection
+				}
+			}
 		}
 	}
+
+	return
 }

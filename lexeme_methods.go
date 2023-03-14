@@ -139,6 +139,8 @@ func (lexeme lexeme) String() string {
 		builder.WriteString("POP-STACK-LAST")
 	case popStackRandomLexeme:
 		builder.WriteString("POP-STACK-RAND")
+	case countStackLexeme:
+		builder.WriteString("COUNT-STACK")
 	case useStackIndexZeroLexeme:
 		builder.WriteString("USE-STACK-ZERO")
 	case useStackIndexOneLexeme:
@@ -163,8 +165,10 @@ func (lexeme lexeme) String() string {
 		builder.WriteString("INVERT")
 	case modifierLexeme:
 		builder.WriteString("MODIFIER")
-	case plaintextLexeme:
-		builder.WriteString("PLAINTEXT")
+	case filePathLexeme:
+		builder.WriteString("FILE-PATH")
+	case parentLexeme:
+		builder.WriteString("PARENT")
 	case separatorLexeme:
 		builder.WriteString("SEP")
 	case emptyLexeme:

@@ -80,9 +80,10 @@ const (
 	shuffleStackLexeme
 	swapStackTopLexeme
 	reverseStackLexeme
-	plaintextLexeme // only used within read-file sections
+	filePathLexeme
 	invertLexeme
 	modifierLexeme
 	separatorLexeme // used for whitespace
 	emptyLexeme     // used by cleanTokens to replace unnecessary tokens
+	parentLexeme    // used by cleanTokens to hold a child tokenCollection
 )

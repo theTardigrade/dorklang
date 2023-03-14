@@ -1,23 +1,33 @@
 package dorklang
 
 import (
-	"log"
+	"os"
 )
 
 func InterpretCode(input []byte, options InterpretCodeOptions) (output uint64, err error) {
+	initialDir, err := os.Getwd()
+	if err != nil {
+		return
+	}
+
+	err = os.Chdir(options.WorkingDir)
+	if err != nil {
+		return
+	}
+
 	tokens, err := produceTokens(input)
 	if err != nil {
 		return
 	}
 
 	if !options.SkipClean {
-		cleanTokens(tokens)
+		if err = cleanTokens(tokens); err != nil {
+			return
+		}
 	}
 
 	if options.DebugMode {
-		for _, t := range tokens {
-			log.Printf("lexeme: %s\n", t.lex)
-		}
+		tokens.log()
 	}
 
 	tree, err := produceTree(tokens, options)
@@ -30,6 +40,11 @@ func InterpretCode(input []byte, options InterpretCodeOptions) (output uint64, e
 		return
 	}
 	output = outputMemoryCell.Uint64()
+
+	err = os.Chdir(initialDir)
+	if err != nil {
+		return
+	}
 
 	return
 }

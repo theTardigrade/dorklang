@@ -7,7 +7,6 @@
     given.
 }
 
-$
 {{ readFileText.txt }}
 {{ mixins/printCurrentStack.dork }}
 ~

@@ -1,6 +1,6 @@
 *.exe
 *.dork
 *.dork-stack
-!/examples/*.dork
+!/examples/**/*.dork
 /html
 /wasmInterpreter

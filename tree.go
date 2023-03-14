@@ -6,6 +6,7 @@ type tree struct {
 }
 
 type treeNode interface {
+	getLexeme() lexeme
 	getTree() *tree
 	getData() []byte
 	value(memoryCell) (memoryCell, error)

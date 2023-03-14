@@ -13,6 +13,19 @@ import (
 	hash "github.com/theTardigrade/golang-hash"
 )
 
+func (tr *tree) addTerminalNode(node *terminalTreeNode, parentNodeStack *[]*parentTreeNode) (err error) {
+	if len(*parentNodeStack) == 0 {
+		err = ErrTreeParentNodeUnfound
+		return
+	}
+
+	nextParentNode := (*parentNodeStack)[len(*parentNodeStack)-1]
+	nextParentNode.childNodes = append(nextParentNode.childNodes, node)
+	node.parentNode = nextParentNode
+
+	return
+}
+
 func (tr *tree) addNode(t token, parentNodeStack *[]*parentTreeNode) (err error) {
 	handled := true
 
@@ -49,14 +62,9 @@ func (tr *tree) addNode(t token, parentNodeStack *[]*parentTreeNode) (err error)
 				},
 			}
 
-			if len(*parentNodeStack) == 0 {
-				err = ErrTreeParentNodeUnfound
+			if err = tr.addTerminalNode(nextNode, parentNodeStack); err != nil {
 				return
 			}
-
-			nextParentNode := (*parentNodeStack)[len(*parentNodeStack)-1]
-			nextParentNode.childNodes = append(nextParentNode.childNodes, nextNode)
-			nextNode.parentNode = nextParentNode
 
 			for _, t2 := range t.childCollection {
 				if err = tr.addNode(t2, parentNodeStack); err != nil {
@@ -71,9 +79,9 @@ func (tr *tree) addNode(t token, parentNodeStack *[]*parentTreeNode) (err error)
 				},
 			}
 
-			nextParentNode = (*parentNodeStack)[len(*parentNodeStack)-1]
-			nextParentNode.childNodes = append(nextParentNode.childNodes, nextNode)
-			nextNode.parentNode = nextParentNode
+			if err = tr.addTerminalNode(nextNode, parentNodeStack); err != nil {
+				return
+			}
 		}
 	case startProgramLexeme,
 		endProgramLexeme,
@@ -182,16 +190,10 @@ func (tr *tree) addNode(t token, parentNodeStack *[]*parentTreeNode) (err error)
 				defaultTreeNode: defaultNode,
 			}
 
-			if len(*parentNodeStack) == 0 {
-				err = ErrTreeParentNodeUnfound
+			if err = tr.addTerminalNode(nextNode, parentNodeStack); err != nil {
 				return
 			}
-
-			nextParentNode := (*parentNodeStack)[len(*parentNodeStack)-1]
-			nextParentNode.childNodes = append(nextParentNode.childNodes, nextNode)
-			nextNode.parentNode = nextParentNode
 		}
-
 	default:
 		err = ErrLexemeUnrecognized
 		return

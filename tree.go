@@ -1,14 +1,17 @@
 package dorklang
 
+import "io"
+
 const (
-	treeSaveFileExtension = ".dork.txt"
-	treeSaveStackMaxLen   = 1 << 20 // 1_048_576
+	treeSaveStackMaxLen = 1 << 20 // 1_048_576
 )
 
 type tree struct {
 	rootNode       *parentTreeNode
 	saveStackIndex int
 	saveStacks     [2]memoryCellCollection
+	reader         io.Reader
+	writer         io.Writer
 }
 
 type treeNode interface {

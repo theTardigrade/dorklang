@@ -1,6 +1,8 @@
 package dorklang
 
-func produceTree(input tokenCollection) (output *tree, err error) {
+import "io"
+
+func produceTree(input tokenCollection, reader io.Reader, writer io.Writer) (output *tree, err error) {
 	rootNode := &parentTreeNode{}
 	parentNodeStack := []*parentTreeNode{
 		rootNode,
@@ -11,6 +13,8 @@ func produceTree(input tokenCollection) (output *tree, err error) {
 
 	output = new(tree)
 	output.rootNode = rootNode
+	output.reader = reader
+	output.writer = writer
 
 	for i := range output.saveStacks {
 		output.saveStacks[i] = make(memoryCellCollection, 0, treeSaveStackMaxLen)

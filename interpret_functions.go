@@ -20,12 +20,12 @@ func InterpretCode(input []byte, options InterpretCodeOptions) (output uint64, e
 		}
 	}
 
-	tree, err := produceTree(tokens)
+	tree, err := produceTree(tokens, options.Input, options.Output)
 	if err != nil {
 		return
 	}
 
-	outputMemoryCell, err := tree.Run()
+	outputMemoryCell, err := tree.Run(options.WorkingDir)
 	if err != nil {
 		return
 	}

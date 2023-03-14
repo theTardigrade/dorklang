@@ -12,8 +12,26 @@ import (
 	hash "github.com/theTardigrade/golang-hash"
 )
 
-func (tree *tree) Run() (output memoryCell, err error) {
+func (tree *tree) Run(workingDir string) (output memoryCell, err error) {
+	initialDir, err := os.Getwd()
+	if err != nil {
+		return
+	}
+
+	err = os.Chdir(workingDir)
+	if err != nil {
+		return
+	}
+
 	output, err = tree.rootNode.value(0)
+	if err != nil {
+		return
+	}
+
+	err = os.Chdir(initialDir)
+	if err != nil {
+		return
+	}
 
 	return
 }
@@ -400,20 +418,48 @@ func (node *terminalTreeNode) value(input memoryCell) (output memoryCell, err er
 	case cubeLexeme:
 		output *= output * output
 	case printCharacterLexeme:
-		if _, err = fmt.Printf("%c", output); err != nil {
-			return
+		{
+			if node.tree == nil {
+				err = ErrTreeUnfound
+				return
+			}
+
+			if _, err = fmt.Fprintf(node.tree.writer, "%c", output); err != nil {
+				return
+			}
 		}
 	case printNumberLexeme:
-		if _, err = fmt.Printf("%d", output); err != nil {
-			return
+		{
+			if node.tree == nil {
+				err = ErrTreeUnfound
+				return
+			}
+
+			if _, err = fmt.Fprintf(node.tree.writer, "%d", output); err != nil {
+				return
+			}
 		}
 	case inputCharacterLexeme:
-		if _, err = fmt.Scanf("%c", &output); err != nil {
-			return
+		{
+			if node.tree == nil {
+				err = ErrTreeUnfound
+				return
+			}
+
+			if _, err = fmt.Fscanf(node.tree.reader, "%c", output); err != nil {
+				return
+			}
 		}
 	case inputNumberLexeme:
-		if _, err = fmt.Scanf("%d", &output); err != nil {
-			return
+		{
+			if node.tree == nil {
+				err = ErrTreeUnfound
+				return
+			}
+
+			if _, err = fmt.Fscanf(node.tree.reader, "%d", output); err != nil {
+				return
+			}
 		}
 	case logicalAndStackPairLexeme:
 		{
@@ -654,7 +700,7 @@ func (node *terminalTreeNode) value(input memoryCell) (output memoryCell, err er
 			}
 
 			content := contentBuilder.Bytes()
-			fileName := output.String() + treeSaveFileExtension
+			fileName := output.String() + FileExtensionForSaveStack
 
 			if err = os.WriteFile(fileName, content, os.ModePerm); err != nil {
 				return
@@ -669,7 +715,7 @@ func (node *terminalTreeNode) value(input memoryCell) (output memoryCell, err er
 
 			var content []byte
 
-			fileName := output.String() + treeSaveFileExtension
+			fileName := output.String() + FileExtensionForSaveStack
 			content, err = os.ReadFile(fileName)
 			if err != nil {
 				return
@@ -909,7 +955,7 @@ func (node *terminalTreeNode) value(input memoryCell) (output memoryCell, err er
 				return
 			}
 
-			fileName := output.String() + treeSaveFileExtension
+			fileName := output.String() + FileExtensionForSaveStack
 
 			if err = os.Remove(fileName); err != nil {
 				return

@@ -2,9 +2,8 @@
 
 {
                         NOTE
-    It is necessary to run the dorklang interpreter
-    from the example directory, so that it can find
-    the file, since a relative path has been given.
+    The other file will be read relative to the directory
+    of the current file.
 }
 
 $

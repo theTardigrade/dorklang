@@ -3,3 +3,4 @@
 *.dork.txt
 !/examples/*.dork
 /html
+/wasmInterpreter

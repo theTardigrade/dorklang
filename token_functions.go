@@ -775,7 +775,7 @@ func cleanTokens(input tokenCollection) (err error) {
 							[]byte(fileDir),
 							[]byte(initialDir),
 						},
-						[]byte{0},
+						tokenDataSeparatorByteSlice,
 					)
 				}
 

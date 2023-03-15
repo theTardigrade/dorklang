@@ -53,7 +53,7 @@ func (tr *tree) addNode(t token, parentNodeStack *[]*parentTreeNode) (err error)
 		}
 	case parentLexeme:
 		{
-			dirs := bytes.Split(t.data, []byte{0})
+			dirs := bytes.Split(t.data, tokenDataSeparatorByteSlice)
 			nextDir := dirs[0]
 			initialDir := dirs[1]
 

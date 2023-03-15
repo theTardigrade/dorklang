@@ -754,16 +754,16 @@ func cleanTokens(input tokenCollection) (err error) {
 					return
 				}
 
-				err = os.Chdir(initialDir)
-				if err != nil {
-					return
-				}
-
 				fileExt := filepath.Ext(filePath)
 
 				if fileExt == FileExtensionForCode {
 					var childTokenCollection tokenCollection
 					childTokenCollection, err = produceTokens(content)
+					if err != nil {
+						return
+					}
+
+					err = cleanTokens(childTokenCollection)
 					if err != nil {
 						return
 					}
@@ -777,6 +777,11 @@ func cleanTokens(input tokenCollection) (err error) {
 						},
 						[]byte{0},
 					)
+				}
+
+				err = os.Chdir(initialDir)
+				if err != nil {
+					return
 				}
 			}
 		}

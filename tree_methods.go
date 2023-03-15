@@ -21,7 +21,9 @@ func (tr *tree) addTerminalNode(node *terminalTreeNode, parentNodeStack *[]*pare
 
 	nextParentNode := (*parentNodeStack)[len(*parentNodeStack)-1]
 	nextParentNode.childNodes = append(nextParentNode.childNodes, node)
+
 	node.parentNode = nextParentNode
+	node.tree = tr
 
 	return
 }
